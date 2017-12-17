@@ -95,7 +95,7 @@ class report_iomadanalytics_utils {
         $Attemps = $this->getAttemps();
         $Users = $this->getUsersFromCountry($country);
         foreach ($Users as $user) {
-            if (!array_search($user->id, array_column($Attemps, 'userid'))) {
+            if (array_search($user->id, array_column($Attemps, 'userid')) === false) {
                 $c = $c + 1;
             }
         }
@@ -106,12 +106,21 @@ class report_iomadanalytics_utils {
         $c = 0;
         $Users = $this->DB->get_recordset('user', array('country'=>$country,'suspended'=>'0', 'deleted'=>'0'), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
         foreach ($Users as $user) {
-            $a = $this->DB->get_records_sql(
-                'SELECT id FROM mdl_quiz_attempts WHERE userid=:userid AND (quiz >=2 AND quiz <= 11)',
+            $Attemps = $this->DB->get_records_sql(
+                'SELECT id,quiz FROM mdl_quiz_attempts WHERE userid=:userid;',
                 array('userid'=>$user->id)
             );
-            if (count($a) !== 0) {
-                $c = $c + 1;
+            if (count($Attemps) !== 0) {
+                $started = true;
+                foreach ($Attemps as $attempt) {
+                    // reject the record if the user has an attemp for final test (quiz id 12)
+                    if ($attempt->quiz == 12) {
+                        $started = false;
+                    }
+                }
+                if ($started) {
+                    $c = $c + 1;
+                }
             }
         }
         $Users->close();
@@ -156,6 +165,24 @@ class report_iomadanalytics_utils {
             array(), $limitfrom=0, $limitnum=0
         );
         return $Quiz;
+    }
+
+    public function getQuizCompletionTime($courseid, $quizid, $students){
+        //$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $quizid, array_keys($students));
+
+            //FROM_UNIXTIME(timestart, '%Y-%m-%d %H:%i:%s') as ts,
+            //FROM_UNIXTIME(timefinish, '%Y-%m-%d %H:%i:%s') as tf,
+        $grading_info = $this->DB->get_records_sql(
+            "SELECT id, quiz, userid, MAX(attempt) as m, sumgrades,
+            SEC_TO_TIME(TIMESTAMPDIFF(second, FROM_UNIXTIME(timestart, '%Y-%m-%d %H:%i:%s'),FROM_UNIXTIME(timefinish, '%Y-%m-%d %H:%i:%s'))) as td
+            FROM (SELECT * FROM mdl_quiz_attempts order by userid ASC, attempt DESC) AS t
+            where quiz = {$quizid} AND state='finished'
+            group by userid
+            order by userid;",
+            array(), $limitfrom=0, $limitnum=0
+        );
+
+        return $grading_info;
     }
 
     public function getPercent($number, $divider, $precision=false) {

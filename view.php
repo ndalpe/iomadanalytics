@@ -46,8 +46,6 @@ $Countries = $reportUtils->getCountries(false);
 /**************************************************/
 /********** Average Grade For Fianl Test **********/
 /**************************************************/
-
-
 foreach ($Countries as $key => $country) {
 	$Companies = $reportUtils->getCompaniesInCountry($country->country);
 
