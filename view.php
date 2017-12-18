@@ -100,10 +100,27 @@ foreach ($Countries as $key => $country) {
 	);
 }
 
+// Process keyMetric
+$notStarted = $started = $completed = 0;
+$numberStudents = $reportUtils->getAllStudents();
+foreach ($allCtryProgressData as $data) {
+	$notStarted += $data['notStarted'];
+	$started += $data['started'];
+	$completed += $data['completed'];
+}
+$keyMetric = array(
+	'notStarted_label' => get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
+	'notStarted_metric' => $reportUtils->getPercent($notStarted, $numberStudents, $precision=false),
+	'started_label' => get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
+	'started_metric' => $reportUtils->getPercent($started, $numberStudents, $precision=false),
+	'completed_label' => get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
+	'completed_metric' => $reportUtils->getPercent($completed, $numberStudents, $precision=false)
+);
+
 // All country final test avg bock data
 $allCtryBlockData = array();
 $allCtryBlockData['header'] = get_string('AllCtryProgressBlock_title', 'report_iomadanalytics');
-$allCtryBlockData['keyMetric'] = '';
+$allCtryBlockData['keyMetric'] = $keyMetric;
 $allCtryBlockData['countries'] = $allCtryProgressData;
 
 // set AllCtryProgressBlock in template
@@ -113,6 +130,15 @@ $allCtryProgBlockTlpData->data = $allCtryBlockData;
 $report->setTplBlock($allCtryProgBlockTlpData);
 /**************************************************/
 /********* All Countries Course Progress **********/
+/**************************************************/
+
+/**************************************************/
+/********* All Countries Time Completion **********/
+/**************************************************/
+//AllCtryTimeCompBlock
+
+/**************************************************/
+/********* All Countries Time Completion **********/
 /**************************************************/
 
 

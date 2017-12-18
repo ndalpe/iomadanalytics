@@ -51,13 +51,37 @@
     <div class="card" id="nic">
       <div class="card-block">
         <h4 class="card-title">{{header}}</h4>
-        <h6 class="card-subtitle mb-2 text-muted">{{keyMetric}}</h6>
+        {{# keyMetric}}
+        <div class="row">
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{notStarted_label}}<br>{{notStarted_metric}}%</h6></div>
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{started_label}}<br>{{started_metric}}%</h6></div>
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{completed_label}}<br>{{completed_metric}}%</h6></div>
+        </div>
+        {{/ keyMetric}}
         {{# countries}}
-        <p>{{name}} {{notStarted}} {{started}} {{completed}}</p>
+        <p class="card-text">{{name}} {{notStarted}} {{started}} {{completed}}</p>
         {{/ countries}}
       </div>
     </div>
     {{/ AllCtryProgressBlock}}
   </div>
-  <div class="col-md-4"></div>
+  <div class="col-md-4">
+    {{# AllCtryTimeCompBlock}}
+    <div class="card" id="nic">
+      <div class="card-block">
+        <h4 class="card-title">{{header}}</h4>
+        {{# keyMetric}}
+        <div class="row">
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{notStarted_label}}<br>{{notStarted_metric}}%</h6></div>
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{started_label}}<br>{{started_metric}}%</h6></div>
+          <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{completed_label}}<br>{{completed_metric}}%</h6></div>
+        </div>
+        {{/ keyMetric}}
+        {{# countries}}
+        <p class="card-text">{{name}} {{notStarted}} {{started}} {{completed}}</p>
+        {{/ countries}}
+      </div>
+    </div>
+    {{/ AllCtryTimeCompBlock}}
+  </div>
 </div>

@@ -137,6 +137,10 @@ class report_iomadanalytics_utils {
         return $Users;
     }
 
+    public function getAllStudents() {
+        return $this->DB->count_records('user', array('deleted'=>0, 'suspended'=>0));
+    }
+
     public function getUsersFromCountry($country) {
         $Users = $this->DB->get_records_sql(
             'SELECT * FROM mdl_user WHERE country=:country AND suspended=0 AND deleted=0;',

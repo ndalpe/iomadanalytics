@@ -30,3 +30,5 @@ $string['AllCtryProgressBlock_title'] = 'Global Courses Progress';
 $string['AllCtryProgressBlock_notStarted'] = 'Not Started';
 $string['AllCtryProgressBlock_started'] = 'Started';
 $string['AllCtryProgressBlock_completed'] = 'Completed';
+
+$string['AllCtryTimeCompBlock_title'] = 'Average Time Completion';
