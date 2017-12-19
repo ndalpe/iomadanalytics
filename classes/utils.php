@@ -26,9 +26,13 @@ defined('MOODLE_INTERNAL') || die();
 class report_iomadanalytics_utils {
 
     // Cache recordset
-    public $Users;
+    public $Users = false;
     public $Attemps;
     public $quiz;
+
+    public $coursesId = array(7,9,10,11,12,13,14,15,16,17,18);
+
+    public $quizsId   = array(2,3,4,5,6,7,8,9,10,11,12);
 
     public function __construct(){
         if (!isset($DB)) {
@@ -137,13 +141,42 @@ class report_iomadanalytics_utils {
         return $Users;
     }
 
-    public function getAllStudents() {
+    public function getTotalCompletionTime($userid){
+        $strCroursesId = implode(',', $this->coursesId);
+        $CompTime = $this->DB->get_records_sql("
+            SELECT
+                l.id,
+                l.userid as userid,
+                DATE_FORMAT(FROM_UNIXTIME(l.timecreated),'%Y-%m-%d') AS dTime,
+                @prevtime := (SELECT MAX(timecreated) FROM mdl_logstore_standard_log WHERE userid = $userid AND id < l.id ORDER BY id ASC LIMIT 1) AS prev_time,
+                IF (l.timecreated - @prevtime < 600, @delta := @delta + (l.timecreated-@prevtime),0) AS sumtime,
+                l.timecreated-@prevtime AS delta
+            FROM mdl_logstore_standard_log AS l, (SELECT @delta := 0) AS s_init
+            WHERE l.userid = {$userid} AND l.courseid IN ({$strCroursesId}) AND  component != 'core' AND component != 'gradereport_overview' AND component != 'report_completion' AND component != 'gradereport_grader' AND component != 'mod_forum'
+            ORDER BY sumtime DESC
+            LIMIT 1;", array(), $limitfrom=0, $limitnum=0
+        );
+        return $CompTime;
+    }
+
+    public function getCountStudents() {
         return $this->DB->count_records('user', array('deleted'=>0, 'suspended'=>0));
+    }
+
+    public function getAllStudentsCompleted($country) {
+        $Students = $this->DB->get_records_sql("
+            SELECT u.id
+            FROM mdl_user as u
+            INNER JOIN mdl_quiz_attempts as a ON u.id = a.userid
+            WHERE u.country=:country AND a.quiz = 12 AND u.suspended=0 AND u.deleted=0;",
+            array('country'=>$country)
+        );
+        return $Students;
     }
 
     public function getUsersFromCountry($country) {
         $Users = $this->DB->get_records_sql(
-            'SELECT * FROM mdl_user WHERE country=:country AND suspended=0 AND deleted=0;',
+            'SELECT id FROM mdl_user WHERE country=:country AND suspended=0 AND deleted=0;',
             array('country'=>$country), $limitfrom=0, $limitnum=0
         );
         return $Users;
@@ -171,22 +204,18 @@ class report_iomadanalytics_utils {
         return $Quiz;
     }
 
-    public function getQuizCompletionTime($courseid, $quizid, $students){
-        //$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $quizid, array_keys($students));
+    public function getTimeFromSec($sec) {
+        if ($sec > 86400) {
+            return 0;
+        }
 
-            //FROM_UNIXTIME(timestart, '%Y-%m-%d %H:%i:%s') as ts,
-            //FROM_UNIXTIME(timefinish, '%Y-%m-%d %H:%i:%s') as tf,
-        $grading_info = $this->DB->get_records_sql(
-            "SELECT id, quiz, userid, MAX(attempt) as m, sumgrades,
-            SEC_TO_TIME(TIMESTAMPDIFF(second, FROM_UNIXTIME(timestart, '%Y-%m-%d %H:%i:%s'),FROM_UNIXTIME(timefinish, '%Y-%m-%d %H:%i:%s'))) as td
-            FROM (SELECT * FROM mdl_quiz_attempts order by userid ASC, attempt DESC) AS t
-            where quiz = {$quizid} AND state='finished'
-            group by userid
-            order by userid;",
-            array(), $limitfrom=0, $limitnum=0
-        );
+        if ($sec < 3600) {
+            $time = gmdate("i:s", $sec);
+        } else {
+            $time = gmdate("H:i:s", $sec);
+        }
 
-        return $grading_info;
+        return $time;
     }
 
     public function getPercent($number, $divider, $precision=false) {
