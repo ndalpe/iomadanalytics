@@ -37,145 +37,17 @@ $output = $PAGE->get_renderer('report_iomadanalytics');
 
 $report = new report_iomadanalytics();
 
-// Utility class to get the report's data
-$reportUtils = new report_iomadanalytics_utils();
-
-// Get all countries
-$Countries = $reportUtils->getCountries(false);
-
-/**************************************************/
-/********** Average Grade For Fianl Test **********/
-/**************************************************/
-foreach ($Countries as $key => $country) {
-	$Companies = $reportUtils->getCompaniesInCountry($country->country);
-
-	// company if withing the current country
-	$company_ids = array();
-
-	// compile all company id from the current country and implode it to put in an IN() statement
-	foreach ($Companies as $company) {
-		$company_ids[] = $company->id;
-	}
-	$comp_id = implode(',', $company_ids);
-
-	// store country average
-	$countryFinalTestAvg[] = array(
-		'name' => get_string($country->country, 'countries'),
-		'grade' => $reportUtils->getAvgGrade($comp_id, 12)
-	);
-}
-// avg of all country
-$allCtry = 0;
-foreach ($countryFinalTestAvg as $value) {
-	$allCtry += $value['grade'];
-}
-$allCtryAvg = $allCtry / count($countryFinalTestAvg);
-
-// All country final test avg bock data
-$allCtryBlockData = array();
-$allCtryBlockData['header'] = get_string('AllCtryAvgBlock_title', 'report_iomadanalytics');
-$allCtryBlockData['keyMetric'] = $allCtryAvg.'%';
-$allCtryBlockData['countries'] = $countryFinalTestAvg;
-
-// set AllCtryAvgBlock in template
-$allCtryBlockTlpData = new stdClass();
-$allCtryBlockTlpData->name = 'AllCtryAvgBlock';
-$allCtryBlockTlpData->data = $allCtryBlockData;
-$report->setTplBlock($allCtryBlockTlpData);
-/**************************************************/
-/********** Average Grade For Fianl Test **********/
-/**************************************************/
+/******************************************/
+/************** Set UI text ***************/
+/******************************************/
+$uiText = new \stdClass();
+$uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
+$report->setTplVars($uiText);
 
 
-/**************************************************/
-/********* All Countries Course Progress **********/
-/**************************************************/
-
-foreach ($Countries as $key => $country) {
-	$allCtryProgressData[] = array(
-		'name' => get_string($country->country, 'countries'),
-		'notStarted' => $reportUtils->getNotStarted($country->country),
-		'started'    => $reportUtils->getStarted($country->country),
-		'completed'  => $reportUtils->getCompleted($country->country)
-	);
-}
-
-// Process keyMetric
-$notStarted = $started = $completed = 0;
-$numberStudents = $reportUtils->getCountStudents();
-foreach ($allCtryProgressData as $data) {
-	$notStarted += $data['notStarted'];
-	$started += $data['started'];
-	$completed += $data['completed'];
-}
-$keyMetric = array(
-	'notStarted_label' => get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
-	'notStarted_metric' => $reportUtils->getPercent($notStarted, $numberStudents, $precision=false),
-	'started_label' => get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
-	'started_metric' => $reportUtils->getPercent($started, $numberStudents, $precision=false),
-	'completed_label' => get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
-	'completed_metric' => $reportUtils->getPercent($completed, $numberStudents, $precision=false)
-);
-
-// All country final test avg bock data
-$allCtryBlockData = array();
-$allCtryBlockData['header'] = get_string('AllCtryProgressBlock_title', 'report_iomadanalytics');
-$allCtryBlockData['keyMetric'] = $keyMetric;
-$allCtryBlockData['countries'] = $allCtryProgressData;
-
-// set AllCtryProgressBlock in template
-$allCtryProgBlockTlpData = new stdClass();
-$allCtryProgBlockTlpData->name = 'AllCtryProgressBlock';
-$allCtryProgBlockTlpData->data = $allCtryBlockData;
-$report->setTplBlock($allCtryProgBlockTlpData);
-/**************************************************/
-/********* All Countries Course Progress **********/
-/**************************************************/
-
-/**************************************************/
-/********* All Countries Time Completion **********/
-/**************************************************/
-
-foreach ($Countries as $key => $country) {
-	$b = $all = 0;
-	$Students = $reportUtils->getAllStudentsCompleted($country->country);
-	$numberStudents = count($Students);
-	foreach ($Students as $student) {
-		$as = $reportUtils->getTotalCompletionTime($student->id);
-		foreach ($as as $a) {
-			if ($a->sumtime > 1200 AND $a->sumtime < 10600) {
-				$b += $a->sumtime;
-			}
-		}
-	}
-
-	// Compile average per country
-	$allCtryTimeData[] = array(
-		'name' => get_string($country->country, 'countries'),
-		'timeSpent' => $reportUtils->getTimeFromSec(($b/$numberStudents))
-	);
-
-	// Get the data for the global (all country average)
-	$all += $b;
-}
-
-// All country final test avg bock data
-$allCtryTimeBlockData = array();
-$allCtryTimeBlockData['header'] = get_string('AllCtryTimeCompBlock_title', 'report_iomadanalytics');
-$allCtryTimeBlockData['keyMetric'] = $reportUtils->getTimeFromSec(($all/count($Countries)));
-$allCtryTimeBlockData['countries'] = $allCtryTimeData;
-
-// set AllCtryProgressBlock in template
-$allCtryTimeCompBlockTlpData = new stdClass();
-$allCtryTimeCompBlockTlpData->name = 'AllCtryTimeCompBlock';
-$allCtryTimeCompBlockTlpData->data = $allCtryTimeBlockData;
-$report->setTplBlock($allCtryTimeCompBlockTlpData);
-
-/**************************************************/
-/********* All Countries Time Completion **********/
-/**************************************************/
-
-
+/******************************************/
+/************** Output Page ***************/
+/******************************************/
 echo $output->header();
 echo $output->render($report);
 echo $output->footer();

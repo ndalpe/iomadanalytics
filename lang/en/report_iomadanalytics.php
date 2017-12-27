@@ -24,6 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['pluginname'] = 'report_iomadanalytics';
+
+$string['systemoverview_block_title'] = 'System Overview (All countries)';
+
 $string['AllCtryAvgBlock_title'] = 'Average Fianl Test Result';
 
 $string['AllCtryProgressBlock_title'] = 'Global Courses Progress';

@@ -32,11 +32,29 @@ class report_iomadanalytics implements renderable, templatable {
     public function __construct() {}
 
     public function setTplBlock($tplBlock) {
-    	$this->data[$tplBlock->name] = $tplBlock->data;
+        $this->data[$tplBlock->name] = $tplBlock->data;
+    }
+
+    public function setTplVars($tplVars) {
+        foreach ($tplVars as $key => $value) {
+    	   $this->data[$key] = $value;
+        }
     }
 
     public function export_for_template(renderer_base $output) {
     	return $this->data;
+    }
+
+    public function allCtryAvgBlock(renderer_base $output){
+        return $this->data['AllCtryAvgBlock'];
+    }
+
+    public function allCtryProgressBlock(renderer_base $output){
+        return $this->data['AllCtryProgressBlock'];
+    }
+
+    public function allCtryTimeCompBlock(renderer_base $output){
+        return $this->data['AllCtryTimeCompBlock'];
     }
 }
 
@@ -46,7 +64,22 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
 
     protected function render_report_iomadanalytics(report_iomadanalytics $widget) {
         $data = $widget->export_for_template($this);
-        return parent::render_from_template('report_iomadanalytics/all_ctry_avg_block', $data);
+        return parent::render_from_template('report_iomadanalytics/system_overview', $data);
+    }
+
+    public function render_allCtryAvgBlock(report_iomadanalytics $widget) {
+        $data['AllCtryAvgBlock'] = $widget->allCtryAvgBlock($this);
+        return parent::render_from_template('report_iomadanalytics/AllCtryAvgBlock', $data);
+    }
+
+    public function render_allCtryProgressBlock(report_iomadanalytics $widget) {
+        $data['AllCtryProgressBlock'] = $widget->allCtryProgressBlock($this);
+        return parent::render_from_template('report_iomadanalytics/AllCtryProgressBlock', $data);
+    }
+
+    public function render_allCtryTimeCompBlock(report_iomadanalytics $widget) {
+        $data['AllCtryTimeCompBlock'] = $widget->allCtryTimeCompBlock($this);
+        return parent::render_from_template('report_iomadanalytics/AllCtryTimeCompBlock', $data);
     }
 
     // protected function render_report_iomadanalytics(report_iomadanalytics $widget) {
