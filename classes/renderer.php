@@ -42,7 +42,7 @@ class report_iomadanalytics implements renderable, templatable {
     }
 
     public function export_for_template(renderer_base $output) {
-    	return $this->data;
+        return $this->data;
     }
 
     public function allCtryAvgBlock(renderer_base $output){
@@ -56,6 +56,10 @@ class report_iomadanalytics implements renderable, templatable {
     public function allCtryTimeCompBlock(renderer_base $output){
         return $this->data['AllCtryTimeCompBlock'];
     }
+
+    public function companyList(renderer_base $output){
+        return $this->data['CompanyList'];
+    }
 }
 
 //https://v4-alpha.getbootstrap.com/components/card/
@@ -64,7 +68,7 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
 
     protected function render_report_iomadanalytics(report_iomadanalytics $widget) {
         $data = $widget->export_for_template($this);
-        return parent::render_from_template('report_iomadanalytics/system_overview', $data);
+        return parent::render_from_template('report_iomadanalytics/report_iomadanalytics', $data);
     }
 
     public function render_allCtryAvgBlock(report_iomadanalytics $widget) {
@@ -80,6 +84,11 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
     public function render_allCtryTimeCompBlock(report_iomadanalytics $widget) {
         $data['AllCtryTimeCompBlock'] = $widget->allCtryTimeCompBlock($this);
         return parent::render_from_template('report_iomadanalytics/AllCtryTimeCompBlock', $data);
+    }
+
+    public function render_companyList(report_iomadanalytics $widget) {
+        $data['CompanyList'] = $widget->companyList($this);
+        return parent::render_from_template('report_iomadanalytics/CompanyList', $data);
     }
 
     // protected function render_report_iomadanalytics(report_iomadanalytics $widget) {

@@ -62,7 +62,7 @@ class report_iomadanalytics_utils {
     public function getCompaniesInCountry($country) {
         if (is_string($country)) {
             $Companies = $this->DB->get_records_sql(
-                'SELECT id,country FROM mdl_company WHERE country=:country AND suspended=:suspended AND parentid != :parentid;', array('country'=>$country, 'suspended'=>'0', 'parentid'=>'0'), $limitfrom=0, $limitnum=0
+                'SELECT * FROM mdl_company WHERE country=:country AND suspended=:suspended AND parentid != :parentid;', array('country'=>$country, 'suspended'=>'0', 'parentid'=>'0'), $limitfrom=0, $limitnum=0
             );
         } else {
             $Companies = '$country should be a 2 letters country code.';

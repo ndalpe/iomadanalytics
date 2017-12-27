@@ -27,6 +27,7 @@
 $string['pluginname'] = 'report_iomadanalytics';
 
 $string['systemoverview_block_title'] = 'System Overview (All countries)';
+$string['countryselector_block_title'] = 'Country Selector';
 
 $string['AllCtryAvgBlock_title'] = 'Average Fianl Test Result';
 

@@ -24,6 +24,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once('locallib.php');
 
 require_login(0, false);
 
@@ -36,12 +37,52 @@ $PAGE->set_context($systemcontext);
 $output = $PAGE->get_renderer('report_iomadanalytics');
 
 $report = new report_iomadanalytics();
+$reportUtils = new report_iomadanalytics_utils();
+
+// CntryList
+
+/*****************************************************/
+/************** Country Selector Block ***************/
+/*****************************************************/
+$Countries = $reportUtils->getCountries();
+foreach ($Countries as $country) {
+
+	$Companies = $reportUtils->getCompaniesInCountry($country->country);
+	foreach ($Companies as $companie) {
+		$companiesList[] = array(
+			'name' => $companie->name,
+			'shortname' => $companie->shortname,
+			'id' => $companie->id,
+			'country' => $companie->country
+		);
+	}
+	$companiesListBlock = new \stdClass();
+	$companiesListBlock->name = 'CompanyList';
+	$companiesListBlock->data = $companiesList;
+	$reportCie = new report_iomadanalytics();
+	$reportCie->setTplBlock($companiesListBlock);
+	$companieBlockRendered = $output->render_companyList($reportCie);
+
+	$countiesList[] = array(
+		'country_abbr' => $country->country,
+		'country_name' => get_string($country->country, 'countries'),
+		'companies' => $companieBlockRendered
+	);
+	unset($reportCie, $companieBlockRendered, $companiesList);
+}
+// set CntryList in template
+$cntrySelBlockData = new \stdClass();
+$cntrySelBlockData->name = 'CntryList';
+$cntrySelBlockData->data = $countiesList;
+$report->setTplBlock($cntrySelBlockData);
+
 
 /******************************************/
 /************** Set UI text ***************/
 /******************************************/
 $uiText = new \stdClass();
 $uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
+$uiText->countryselector_block_title = get_string('countryselector_block_title', 'report_iomadanalytics');
 $report->setTplVars($uiText);
 
 
