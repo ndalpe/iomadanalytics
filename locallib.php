@@ -55,6 +55,32 @@ class report_iomadanalytics_utils {
     }
 
     /**
+     * Get a list of all countries where there are KP company
+     *
+     * bool $grouped whether the country list should be grouped by country or not
+    */
+    public function getCompanies() {
+        $Companies = $this->DB->get_records_sql(
+            'SELECT * FROM mdl_company WHERE suspended = :suspended AND parentid != :parentid ORDER BY country ASC;', array('parentid'=>'0','suspended'=>'0'), $limitfrom=0, $limitnum=0
+        );
+        return $Companies;
+    }
+
+    public function getCourses()
+    {
+        $coursesId = implode(',', $this->coursesId);
+        $courses = $this->DB->get_records_sql("SELECT id, fullname FROM mdl_course WHERE id IN(".$coursesId.") ORDER BY sortorder", null, $limitfrom=0, $limitnum=0);
+        return $courses;
+    }
+
+    public function getQuizByCourse($courseid)
+    {
+        $quizs = $this->DB->get_records_sql("SELECT id, name FROM mdl_quiz WHERE course = :courseid", array('courseid'=>$courseid), $limitfrom=0, $limitnum=0);
+        return $quizs;
+    }
+
+
+    /**
      * Get a list of all companies in a given country
      *
      * string $country The 2 letters country code (ID = Indonesia, MY = Malaysia, etc)
@@ -70,6 +96,29 @@ class report_iomadanalytics_utils {
         return $Companies;
     }
 
+    /**
+     * Get a list of all students within a company
+     *
+     * string $company_id The company id
+    */
+    public function getStudentsInCompany($company_id)
+    {
+        // test if company exists
+        if ($this->DB->record_exists('company', array('id'=>$company_id))) {
+            $Students = $this->DB->get_records_sql(
+                "SELECT userid as id
+                FROM mdl_company_users as cu
+                INNER JOIN mdl_user as u ON cu.userid = u.id
+                WHERE companyid=:company_id AND cu.suspended=0 AND u.suspended=0 AND u.deleted=0",
+                array('company_id' => $company_id)
+            );
+        } else {
+            $Students = false;
+        }
+
+        return $Students;
+    }
+
     public function getAvgGrade($company_ids, $quiz_id=12) {
         $avgGrades = $this->DB->get_records_sql(
             'SELECT AVG(qg.grade) as avgGrade
@@ -82,15 +131,24 @@ class report_iomadanalytics_utils {
         $numGrades = count($avgGrades);
         $avgs = 0;
         foreach ($avgGrades as $value) {
-            $avgs += round($value->avggrade);
+            $avgs += $value->avggrade;
         }
-        $a = $avgs / $numGrades;
+        if ($avgs != 0) {
+            $a = $avgs / $numGrades;
+        } else {
+            $a = 0;
+        }
 
-        // get number of question in quiz
-        $numQuestion = $this->DB->count_records('quiz_slots', array('quizid' => $quiz_id));
+        // get the quiz max grade value
+        $numQuestion = $this->DB->get_record("quiz", array('id'=>$quiz_id), $fields='grade');
 
         // get grade percentage
-        $percent = round(($a/$numQuestion)*100);
+        if ($a != 0) {
+            $percent = round(($a/$numQuestion->grade)*100);
+        } else {
+            $percent = 0;
+        }
+
         return $percent;
     }
 
@@ -202,6 +260,37 @@ class report_iomadanalytics_utils {
             array(), $limitfrom=0, $limitnum=0
         );
         return $Quiz;
+    }
+
+    public function getAvgPercentGrades($Grades)
+    {
+        $gradeCount = $i = 0;
+
+        foreach ($Grades->items[0]->grades as $key => $grade) {
+
+            if (!is_null($grade->grade)) {
+
+                $gradeNumber = (int)$grade->grade;
+
+                if ($gradeNumber == 0) {
+                    $pGrade = 0;
+                } else {
+                    $pGrade = ($grade->grade / $Grades->items[0]->grademax) * 100;
+                }
+
+                $gradeCount += $pGrade;
+
+                $i++;
+            }
+        }
+
+        if ($i > 0) {
+            $avg = round(($gradeCount / $i));
+        } else {
+            $avg = 0;
+        }
+
+        return $avg;
     }
 
     public function getTimeFromSec($sec) {

@@ -62,9 +62,22 @@
         <input class="form-check-input" type="checkbox" value="{{country_abbr}}" id="{{country_abbr}}">{{country_name}}
       </label>
     </div>
-    {{{companies}}}
+    <div class="country-{{country_abbr}}">
+      {{{companies}}}
+    </div>
     </div>
     {{/ CntryList}}
     </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{gradesGraph_block_title}}</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <canvas id="chart-grades"></canvas>
   </div>
 </div>

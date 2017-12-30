@@ -8,20 +8,6 @@ class SystemOverview extends \core\task\scheduled_task
 {
 
 	// contain utilities function to process the report (contained in the locallib)
-	// - getCountries
-	// - getCompaniesInCountry
-	// - getAvgGrade
-	// - getNotStarted
-	// - getStarted
-	// - getCompleted
-	// - getTotalCompletionTime
-	// - getCountStudents
-	// - getAllStudentsCompleted
-	// - getUsersFromCountry
-	// - getAttemps
-	// - getQuiz
-	// - getTimeFromSec
-	// - getPercent
 	public $reportUtils;
 
 	// Contains all the conutries in mdl_company

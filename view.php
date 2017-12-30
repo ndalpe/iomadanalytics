@@ -32,6 +32,8 @@ $PAGE->set_url('/report/iomadanalytics/view.php');
 
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
+$PAGE->requires->js_call_amd('report_iomadanalytics/iomadanalytics', 'init');
+
 
 // Get custom renderer
 $output = $PAGE->get_renderer('report_iomadanalytics');
@@ -47,6 +49,8 @@ $reportUtils = new report_iomadanalytics_utils();
 $Countries = $reportUtils->getCountries();
 foreach ($Countries as $country) {
 
+	// get companies per country and make the checkbox list
+	// the companies in the country are rendered here cuz mustache doesn't take nested blocks
 	$Companies = $reportUtils->getCompaniesInCountry($country->country);
 	foreach ($Companies as $companie) {
 		$companiesList[] = array(
