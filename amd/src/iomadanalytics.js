@@ -1,9 +1,10 @@
 define(
     [
         'jquery',
-        '/report/iomadanalytics/amd/src/Chart.min.js'
+        '/report/iomadanalytics/amd/src/Chart.min.js',
+        'core/ajax'
     ],
-    function($, Chart) {
+    function($, Chart, ajax) {
     return {
         init: function() {
             $(document).ready(function() {
@@ -35,6 +36,22 @@ define(
                         }
                     });
                 } // end toggleChekbox
+
+                $("#btn").click(function(){
+                    testajax();
+                });
+                function testajax(){
+                    alert('me');
+                    var promises = ajax.call([
+                        {methodname: 'report_iomadanalytics_filters', args: {filters: 'pluginname'}}
+                    ]);
+
+                    promises[0].done(function(response) {
+                        alert('mod_wiki/pluginname is' + response);
+                    }).fail(function(response) {
+                        console.log(response);
+                    });
+                }
 
             }); // end document.ready
         } // end: init
