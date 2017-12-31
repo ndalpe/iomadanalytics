@@ -28,16 +28,28 @@
     Context variables required for this template:
     * headings - string: block title
     * keyMetric - string: average of all country
-  * countries - array: contains all the country name along with their final test average
+    * countries - array: contains all the country name along with their final test average
 }}
 {{# AllCtryAvgBlock}}
 <div class="card" id="nic">
     <div class="card-block">
         <h4 class="card-title">{{header}}</h4>
-        <h6 class="card-subtitle mb-2 text-muted">{{keyMetric}}</h6>
+        <h5 class="card-title text-center">{{keyMetric}}%</h5>
+        <table>
         {{# countries}}
-        <p>{{name}} {{grade}}</p>
+        <tr>
+            <td class="countryName">{{name}}</td>
+            <td class="countryGrade">{{grade}}%</td>
+            <td>
+                <div class="bkgBar">
+                    <div class="bar" style="width:{{grade}}%;">
+                        <img src="/pix/spacer.gif" width="1" height="1" />
+                    </div>
+                </div>
+            </td>
+        </tr>
         {{/ countries}}
+        </table>
     </div>
 </div>
 {{/ AllCtryAvgBlock}}

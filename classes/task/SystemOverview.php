@@ -79,7 +79,8 @@ class SystemOverview extends \core\task\scheduled_task
 			// store country average
 			$countryFinalTestAvg[] = array(
 				'name' => get_string($country->country, 'countries'),
-				'grade' => $this->reportUtils->getAvgGrade($comp_id, 12)
+				'grade' => $this->reportUtils->getAvgGrade($comp_id, 12),
+				'country' => $country->country
 			);
 		}
 
@@ -93,7 +94,7 @@ class SystemOverview extends \core\task\scheduled_task
 		// All country final test avg bock data
 		$allCtryBlockData = array();
 		$allCtryBlockData['header'] = get_string('AllCtryAvgBlock_title', 'report_iomadanalytics');
-		$allCtryBlockData['keyMetric'] = $allCtryAvg.'%';
+		$allCtryBlockData['keyMetric'] = $allCtryAvg;
 		$allCtryBlockData['countries'] = $countryFinalTestAvg;
 
 		// set AllCtryAvgBlock in template
