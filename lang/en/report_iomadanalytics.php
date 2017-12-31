@@ -30,10 +30,10 @@ $string['systemoverview_block_title'] = 'System Overview (All countries)';
 $string['countryselector_block_title'] = 'Country Selector';
 $string['gradesGraph_block_title'] = 'Grades - All Courses';
 
-$string['AllCtryAvgBlock_title'] = 'Average Fianl Test Result';
+$string['AllCtryAvgBlock_title'] = 'Average Final Test Result';
 
 $string['AllCtryProgressBlock_title'] = 'Global Courses Progress';
-$string['AllCtryProgressBlock_notStarted'] = 'Not Started';
+$string['AllCtryProgressBlock_notStarted'] = 'Not&nbsp;Started';
 $string['AllCtryProgressBlock_started'] = 'Started';
 $string['AllCtryProgressBlock_completed'] = 'Completed';
 
