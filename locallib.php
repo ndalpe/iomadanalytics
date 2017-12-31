@@ -310,12 +310,12 @@ class report_iomadanalytics_utils {
     public function getPercent($number, $divider, $precision=false) {
         $number = intval($number);
         if ($number === 0) {
-            $number = 1;
+            return 0;
         }
 
         $divider = intval($divider);
         if ($divider === 0) {
-            $divider = 1;
+            return 0;
         }
 
         $p = ($number/$divider) * 100;

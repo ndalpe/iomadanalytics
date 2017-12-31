@@ -27,7 +27,7 @@ class SystemOverview extends \core\task\scheduled_task
 
 	public function execute()
 	{
-		if (!isset($DB)) {global $DB;}
+		if (!isset($DB))   {global $DB;}
 		if (!isset($PAGE)) {global $PAGE;}
 
 		$this->DB = $DB;
@@ -112,11 +112,18 @@ class SystemOverview extends \core\task\scheduled_task
 	public function allCtryProgressBlock()
 	{
 		foreach ($this->Countries as $key => $country) {
+			$notStarted = $this->reportUtils->getNotStarted($country->country);
+			$started = $this->reportUtils->getStarted($country->country);
+			$completed = $this->reportUtils->getCompleted($country->country);
+			$all = $notStarted+$started+$completed;
 			$allCtryProgressData[] = array(
 				'name' => get_string($country->country, 'countries'),
-				'notStarted' => $this->reportUtils->getNotStarted($country->country),
-				'started'    => $this->reportUtils->getStarted($country->country),
-				'completed'  => $this->reportUtils->getCompleted($country->country)
+				'notStarted' => $notStarted,
+				'notStarted_percent' => $this->reportUtils->getPercent($notStarted, $all, $precision=false),
+				'started'    => $started,
+				'started_percent'    => $this->reportUtils->getPercent($started, $all, $precision=false),
+				'completed'  => $completed,
+				'completed_percent'  => $this->reportUtils->getPercent($completed, $all, $precision=false)
 			);
 		}
 

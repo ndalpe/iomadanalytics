@@ -10,19 +10,19 @@ table {
 .text-center {
     text-align: center !important;
 }
-.green {
+.colGreen {
 	color: #33cc00;
 }
 .bkgGreen {
 	background-color: #33cc00;
 }
-.yellow {
+.colYellow {
 	color: #ffcc00;
 }
 .bkgYellow {
 	background-color: #ffcc00;
 }
-.red {
+.colRed {
 	color: #cc0000;
 }
 .bkgRed {
@@ -31,10 +31,10 @@ table {
 
 .bkgBar {
 	background-color:#CCC;
-	width:100%;
 	height:8px;
+	width:100%;
 }
 .bar {
-	background-color:#33cc00;
+	float: left;
 	height:8px;
 }

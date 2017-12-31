@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template report_iomadanalytics/all_ctry_avg_block
+    @template report_iomadanalytics/AllCtryTimeCompBlock
 
-    Template which defines the average of each countries final test grade
+    Template which defines the average time completion of all country
 
     Classes required for JS:
     * none
@@ -26,18 +26,24 @@
     * none
 
     Context variables required for this template:
-    * headings - string: block title
+    * headings  - string: block title
     * keyMetric - string: average of all country
-  * countries - array: contains all the country name along with their final test average
+    * countries - array: contains all the country name along with their average completion time
 }}
 {{# AllCtryTimeCompBlock}}
 <div class="card" id="nic">
   <div class="card-block">
     <h4 class="card-title">{{header}}</h4>
-    <h6 class="card-subtitle mb-2 text-muted">{{keyMetric}}</h6>
+    <h5 class="card-title text-center">{{keyMetric}}</h5>
+    <table>
     {{# countries}}
-    <p>{{name}} {{timeSpent}}</p>
+    <tr>
+        <td class="countryName">{{name}}</td>
+        <td class="countryGrade">{{timeSpent}}</td>
+        <td>&nbsp;</td>
+    </tr>
     {{/ countries}}
+    </table>
   </div>
 </div>
 {{/ AllCtryTimeCompBlock}}

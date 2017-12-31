@@ -17,7 +17,7 @@
 {{!
     @template report_iomadanalytics/all_ctry_avg_block
 
-    Template which defines the average of each countries final test grade
+    Template which defines the how many student completed, started or not started the course
 
     Classes required for JS:
     * none
@@ -33,17 +33,34 @@
 {{# AllCtryProgressBlock}}
 <div class="card" id="nic">
   <div class="card-block">
-    <h4 class="card-title">{{header}}</h4>
+    <h4 class="card-title text-center">{{header}}</h4>
     {{# keyMetric}}
     <div class="row">
-      <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{notStarted_label}}<br>{{notStarted_metric}}%</h6></div>
-      <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{started_label}}<br>{{started_metric}}%</h6></div>
-      <div class="col-md-4"><h6 class="card-subtitle mb-2 text-muted">{{completed_label}}<br>{{completed_metric}}%</h6></div>
+      <div class="col-md-4"><p class="text-center">{{{notStarted_label}}}<br><span class="colRed">{{notStarted_metric}}%</span></p></div>
+      <div class="col-md-4"><p class="text-center">{{started_label}}<br><span class="colYellow">{{started_metric}}%</span></p></div>
+      <div class="col-md-4"><p class="text-center">{{completed_label}}<br><span class="colGreen">{{completed_metric}}%</span></p></div>
     </div>
     {{/ keyMetric}}
+    <table>
     {{# countries}}
-    <p class="card-text">{{name}} {{notStarted}} {{started}} {{completed}}</p>
+    <tr>
+        <td class="countryName">{{name}}</td>
+        <td>
+            <div class="bkgBar">
+                <div class="bar bkgRed" style="width:{{notStarted_percent}}%;">
+                    <img src="/pix/spacer.gif" width="1" height="1" />
+                </div>
+                <div class="bar bkgYellow" style="width:{{started_percent}}%;">
+                    <img src="/pix/spacer.gif" width="1" height="1" />
+                </div>
+                <div class="bar bkgGreen" style="width:{{completed_percent}}%;">
+                    <img src="/pix/spacer.gif" width="1" height="1" />
+                </div>
+            </div>
+        </td>
+    </tr>
     {{/ countries}}
+    </table>
   </div>
 </div>
 {{/ AllCtryProgressBlock}}
