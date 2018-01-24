@@ -72,7 +72,11 @@ class GradesGraph extends \core\task\scheduled_task
 
 			$datasets = array();
 			$datasets['datasets'][] = $data;
-			$datasets['labels'] = array('Not Started', 'Started', 'Completed');
+			$datasets['labels'] = array(
+				get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
+			);
 
 			$graph = new \stdClass();
 			$graph->graph = $datasets;
