@@ -10,8 +10,11 @@ class GradesGraph extends \core\task\scheduled_task
 	// contain utilities function to process the report (contained in the locallib)
 	public $reportUtils;
 
-	// Contains all the conutries in mdl_company
+	// Contains all the countries in mdl_company
 	public $Countries;
+
+	// Contains all the companies in mdl_company
+	public $Companies;
 
 	// Get plugin renderer
 	public $output;
@@ -36,15 +39,83 @@ class GradesGraph extends \core\task\scheduled_task
 
 		$this->Countries = $this->reportUtils->getCountries(false);
 
+		$this->Companies = $this->reportUtils->getCompanies();
+
 		$this->output = $PAGE->get_renderer('report_iomadanalytics');
 
 		$this->report = new \report_iomadanalytics();
 
 		// Average Fianl Test Result Block
-		$this->graphAllCompanies();
+		$this->graphFinalGradesAllCompanies();
+
+		// Course Progress All companies
+		$this->graphProgressAllCompanies();
 	}
 
-	public function graphAllCompanies()
+	public function graphProgressAllCompanies()
+	{
+		$graphs = array();
+
+		foreach ($this->Companies as $key => $company) {
+			$notStarted = $this->reportUtils->getNotStartedCompany($company->id);
+			$started = $this->reportUtils->getStartedComapany($company->id);
+			$completed = $this->reportUtils->getCompletedCompany($company->id);
+			$all = $notStarted+$started+$completed;
+
+/*{
+	"companies":[
+	{
+		"company": "KPIN",
+		"id": "2",
+		"graph":
+		{
+			"datasets": [{"data": [10, 20, 30]}],
+			"labels": ["Red", "Yellow", "Blue"]
+		}
+	},
+	{
+		"company": "KPCJKT",
+		"id": "3",
+		"graph":
+		{
+			"datasets": [{"data": [30, 10, 20]}],
+			"labels": ["Red", "Yellow", "Blue"]
+		}
+	}]
+}*/
+
+			$data = new \stdClass();
+			$data->data = [
+				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
+				$this->reportUtils->getPercent($started, $all, $precision=false),
+				$this->reportUtils->getPercent($completed, $all, $precision=false)
+			];
+
+			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+
+			$datasets = array();
+			$datasets['datasets'][] = $data;
+			$datasets['labels'] = array('Not Started', 'Started', 'Completed');
+
+			$graph = new \stdClass();
+			$graph->graph = $datasets;
+			$graph->company = $company->shortname;
+			$graph->id = $company->id;
+
+			$graphs[] = $graph;
+		}
+
+		$allGraph = new \stdClass();
+		$allGraph->companies = $graphs;
+
+		// Generate the graph data file for the current cohort
+		$this->generateFile(
+			'graph_progress_all_companies.json',
+			json_encode($allGraph)
+		);
+	}
+
+	public function graphFinalGradesAllCompanies()
 	{
 		$Companies = $this->reportUtils->getCompanies();
 		foreach ($Companies as $company) {
@@ -81,11 +152,12 @@ class GradesGraph extends \core\task\scheduled_task
 
 		// Generate the graph data file for the current cohort
 		$this->generateFile(
-			'graph_all_companies.json',
+			'graph_grades_all_companies.json',
 			$this->makeJSON(array('labels'=>$allGrades['labels'], 'datasets'=>$dataAll))
 		);
 	}
 
+/*
 	public function graphAllCountries()
 	{
 		$Companies = $this->reportUtils->getCompanies();
@@ -127,7 +199,7 @@ class GradesGraph extends \core\task\scheduled_task
 			$this->makeJSON(array('labels'=>$allGrades['labels'], 'datasets'=>$dataAll))
 		);
 	}
-
+*/
 	private function makeJSON($vars)
 	{
 		$data = new \stdClass();

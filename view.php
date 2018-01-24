@@ -87,6 +87,8 @@ $report->setTplBlock($cntrySelBlockData);
 $uiText = new \stdClass();
 $uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
 $uiText->countryselector_block_title = get_string('countryselector_block_title', 'report_iomadanalytics');
+$uiText->gradesGraph_block_title = get_string('gradesGraph_block_title', 'report_iomadanalytics');
+$uiText->progressGraph_block_title = get_string('progressGraph_block_title', 'report_iomadanalytics');
 $report->setTplVars($uiText);
 
 

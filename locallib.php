@@ -152,10 +152,24 @@ class report_iomadanalytics_utils {
         return $percent;
     }
 
+    // get user who have not started the course in a country
     public function getNotStarted($country) {
         $c = 0;
         $Attemps = $this->getAttemps();
         $Users = $this->getUsersFromCountry($country);
+        foreach ($Users as $user) {
+            if (array_search($user->id, array_column($Attemps, 'userid')) === false) {
+                $c = $c + 1;
+            }
+        }
+        return $c;
+    }
+
+    // get user who have not started the course in a country
+    public function getNotStartedCompany($company_id) {
+        $c = 0;
+        $Attemps = $this->getAttemps();
+        $Users = $this->getStudentsInCompany($company_id);
         foreach ($Users as $user) {
             if (array_search($user->id, array_column($Attemps, 'userid')) === false) {
                 $c = $c + 1;
@@ -189,12 +203,49 @@ class report_iomadanalytics_utils {
         return $c;
     }
 
+    public function getStartedComapany($company_id) {
+        $c = 0;
+        // $Users = $this->DB->get_recordset('user', array('country'=>$country,'suspended'=>'0', 'deleted'=>'0'), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+        $Users = $this->getStudentsInCompany($company_id);
+        foreach ($Users as $user) {
+            $Attemps = $this->DB->get_records_sql(
+                'SELECT id,quiz FROM mdl_quiz_attempts WHERE userid=:userid;',
+                array('userid'=>$user->id)
+            );
+            if (count($Attemps) !== 0) {
+                $started = true;
+                foreach ($Attemps as $attempt) {
+                    // reject the record if the user has an attemp for final test (quiz id 12)
+                    if ($attempt->quiz == 12) {
+                        $started = false;
+                    }
+                }
+                if ($started) {
+                    $c = $c + 1;
+                }
+            }
+        }
+        return $c;
+    }
+
     public function getCompleted($country) {
         $Users = $this->DB->count_records_sql(
             'SELECT count(u.id) AS total FROM mdl_user AS u
             INNER JOIN mdl_quiz_attempts AS a ON u.id = a.userid
             WHERE u.country=:country AND a.quiz=12 AND u.suspended=0 AND u.deleted=0;',
             array('country'=>$country), $limitfrom=0, $limitnum=0
+        );
+        return $Users;
+    }
+
+    public function getCompletedCompany($company_id) {
+        $Users = $this->DB->count_records_sql('
+            SELECT count(u.id) AS total
+            FROM mdl_company_users AS cu
+            INNER JOIN mdl_quiz_attempts AS a ON cu.userid = a.userid
+            INNER JOIN mdl_user AS u ON cu.userid = u.id
+            WHERE cu.companyid=:companyid AND a.quiz=12 AND u.suspended=0 AND u.deleted=0;',
+            array('companyid'=>$company_id), $limitfrom=0, $limitnum=0
         );
         return $Users;
     }

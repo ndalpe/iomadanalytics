@@ -12,19 +12,49 @@ define(
                 // Holds the country abbr
                 // TODO: Ajax this
                 var countries = ['ID', 'MY'],
-                pluginPath = '/report/iomadanalytics/templates/';
+                pluginPath = '/report/iomadanalytics/templates/',
+                ProgressChartId = '';
 
                 // Add listener to country's checkbox in the country selector
                 for (var i = 0; i < countries.length; i++) {
                     toggleChekbox(countries[i]);
                 }
 
-                $.getJSON(pluginPath+"graph_all_companies.json", function(gData){
+                // Make the default final grades graph of all companies
+                $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
                     new Chart(document.getElementById("chart-grades").getContext("2d"),
                         {type:'bar', data:gData, options: {
                             scales: {yAxes: [{ticks: {beginAtZero:true}}]}
                         }}
                     );
+                });
+
+                // Make the default progress graph of all companies
+                $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
+                    for (i in gData.companies) {
+                        ProgressChartId = 'chart-progress-'+gData.companies[i].id;
+
+                        $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
+
+                        console.log(gData.companies[i].company);
+                        new Chart(document.getElementById(ProgressChartId).getContext("2d"),
+                            {
+                                type:'pie',
+                                data:gData.companies[i].graph,
+                                options:{
+                                    legend: false,
+                                    title: {
+                                        display: true,
+                                        position: 'bottom',
+                                        text: gData.companies[i].company
+                                    }
+                                }
+                            }
+                        );
+                    }
+
+
+
                 });
 
                 function toggleChekbox(country) {
