@@ -34,12 +34,45 @@ class report_iomadanalytics_utils {
 
     public $quizsId   = array(2,3,4,5,6,7,8,9,10,11,12);
 
+    public $barGraphColors = array(
+        "51,102,204",
+        "220,57,18",
+        "255,153,0",
+        "16,150,24",
+        "153,0,153",
+        "59,62,172",
+        "0,153,198",
+        "221,68,119",
+        "102,170,0",
+        "184,46,46",
+        "49,99,149",
+        "153,68,15",
+        "34,170,153",
+        "170,170,17",
+        "102,51,204",
+        "230,115,0",
+        "139,7,7",
+        "50,146,98",
+        "85,116,166",
+        "59,62,172"
+    );
+
     public function __construct(){
         if (!isset($DB)) {
             global $DB;
         }
 
         $this->DB = $DB;
+    }
+
+    /**
+     * Return an rgba color string ie: "rgba(51,102,204,0.5)"
+     *
+     * int $index The color index in barGraphColors array
+     * int $alpha The color alpha. Range from 1 to 9
+    */
+    public function getBarGraphColor($index, $alpha) {
+        return 'rgba('.$this->barGraphColors[$index].',0.'.$alpha.')';
     }
 
     /**

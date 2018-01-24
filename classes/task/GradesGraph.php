@@ -62,35 +62,12 @@ class GradesGraph extends \core\task\scheduled_task
 			$completed = $this->reportUtils->getCompletedCompany($company->id);
 			$all = $notStarted+$started+$completed;
 
-/*{
-	"companies":[
-	{
-		"company": "KPIN",
-		"id": "2",
-		"graph":
-		{
-			"datasets": [{"data": [10, 20, 30]}],
-			"labels": ["Red", "Yellow", "Blue"]
-		}
-	},
-	{
-		"company": "KPCJKT",
-		"id": "3",
-		"graph":
-		{
-			"datasets": [{"data": [30, 10, 20]}],
-			"labels": ["Red", "Yellow", "Blue"]
-		}
-	}]
-}*/
-
 			$data = new \stdClass();
 			$data->data = [
 				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
 				$this->reportUtils->getPercent($started, $all, $precision=false),
 				$this->reportUtils->getPercent($completed, $all, $precision=false)
 			];
-
 			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
 			$datasets = array();
@@ -117,10 +94,11 @@ class GradesGraph extends \core\task\scheduled_task
 
 	public function graphFinalGradesAllCompanies()
 	{
+		// Simple counter to pick a color in barGraphColors
+		$colorIndex = 0;
+
 		$Companies = $this->reportUtils->getCompanies();
 		foreach ($Companies as $company) {
-			// $Students = $this->reportUtils->getStudentsInCompany($company->id);
-
 
 			// get all courses
 			$Courses = $this->reportUtils->getCourses();
@@ -142,18 +120,23 @@ class GradesGraph extends \core\task\scheduled_task
 			$allGrades['labels'] = $labels;
 			$dataAll[] = (object) [
 				'data' => $d,
+				'backgroundColor' => $this->reportUtils->getBarGraphColor($colorIndex, 3),
+				'borderColor' => $this->reportUtils->getBarGraphColor($colorIndex, 5),
+				'borderWidth' => 1,
 				'label' => $company->shortname,
 				'stack' => 'stak'.$company->shortname
 			];
 
 			// reset the graph per cohort data
 			unset($labels, $data, $d);
+
+			$colorIndex = $colorIndex + 1;
 		}
 
 		// Generate the graph data file for the current cohort
 		$this->generateFile(
 			'graph_grades_all_companies.json',
-			$this->makeJSON(array('labels'=>$allGrades['labels'], 'datasets'=>$dataAll))
+			$this->makeJSON(array('labels'=>$allGrades['labels'],'datasets'=>$dataAll))
 		);
 	}
 

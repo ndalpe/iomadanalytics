@@ -37,16 +37,13 @@ define(
                         $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
 
                         console.log(gData.companies[i].company);
-                        new Chart(document.getElementById(ProgressChartId).getContext("2d"),
-                            {
+                        new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
                                 type:'pie',
                                 data:gData.companies[i].graph,
                                 options:{
                                     legend: false,
                                     title: {
-                                        display: true,
-                                        position: 'bottom',
-                                        text: gData.companies[i].company
+                                        text:gData.companies[i].company, display:true, position:'bottom'
                                     }
                                 }
                             }
