@@ -44,14 +44,20 @@ define(
                                     legend: false,
                                     title: {
                                         text:gData.companies[i].company, display:true, position:'bottom'
+                                    },
+                                    tooltips: {
+                                        enabled: true,
+                                        mode: 'single',
+                                        callbacks: {
+                                            label: function(tooltip, data) {
+                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
+                                            }
+                                        }
                                     }
                                 }
                             }
                         );
                     }
-
-
-
                 });
 
                 function toggleChekbox(country) {
