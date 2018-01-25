@@ -46,13 +46,13 @@ class SystemOverview extends \core\task\scheduled_task
 			$this->allCtryAvgBlock()
 		);
 
-		// Average Fianl Test Result Block
+		// Average Progress Block
 		$this->generateFile(
 			'allCtryProgressBlock_rendered.mustache',
 			$this->allCtryProgressBlock()
 		);
 
-		// Average Fianl Test Result Block
+		// Average Time Completion Block
 		$this->generateFile(
 			'allCtryTimeCompBlock_rendered.mustache',
 			$this->allCtryTimeCompBlock()
@@ -165,8 +165,12 @@ class SystemOverview extends \core\task\scheduled_task
 	/**************************************************/
 	public function allCtryTimeCompBlock()
 	{
+		// $allTime course completion time in second of all student
+		// $allStudent all student who completed the course in the required range
+		$allTime = $allStudents = 0;
+
 		foreach ($this->Countries as $key => $country) {
-			$b = $all = 0;
+			$b = $selStudent = 0;
 			$Students = $this->reportUtils->getAllStudentsCompleted($country->country);
 			$numberStudents = count($Students);
 			foreach ($Students as $student) {
@@ -174,6 +178,7 @@ class SystemOverview extends \core\task\scheduled_task
 				foreach ($as as $a) {
 					if ($a->sumtime > 1200 AND $a->sumtime < 10600) {
 						$b += $a->sumtime;
+						$selStudent++;
 					}
 				}
 			}
@@ -181,17 +186,18 @@ class SystemOverview extends \core\task\scheduled_task
 			// Compile average per country
 			$allCtryTimeData[] = array(
 				'name' => get_string($country->country, 'countries'),
-				'timeSpent' => $this->reportUtils->getTimeFromSec(($b/$numberStudents))
+				'timeSpent' => $this->reportUtils->getTimeFromSec(($b/$selStudent))
 			);
 
 			// Get the data for the global (all country average)
-			$all += $b;
+			$allTime += $b;
+			$allStudents += $selStudent;
 		}
 
 		// All country final test avg bock data
 		$allCtryTimeBlockData = array();
 		$allCtryTimeBlockData['header'] = get_string('AllCtryTimeCompBlock_title', 'report_iomadanalytics');
-		$allCtryTimeBlockData['keyMetric'] = $this->reportUtils->getTimeFromSec(($all/count($this->Countries)));
+		$allCtryTimeBlockData['keyMetric'] = $this->reportUtils->getTimeFromSec(($allTime/$allStudents));
 		$allCtryTimeBlockData['countries'] = $allCtryTimeData;
 
 		// set AllCtryProgressBlock in template
@@ -201,66 +207,6 @@ class SystemOverview extends \core\task\scheduled_task
 		$this->report->setTplBlock($allCtryTimeCompBlockTlpData);
 
 		return $this->output->render_allCtryTimeCompBlock($this->report);
-	}
-
-	private function makeJSON($vars)
-	{
-		$data = new \stdClass();
-		$data->labels = $vars['labels'];
-		$data->datasets = $vars['datasets'];
-
-		if (isset($vars['options'])) {
-			$data->options = $vars['options'];
-		}
-
-		return json_encode($data);
-	}
-
-	/**
-	 * Retrieve the english part of a multi-lang string
-	 * ie: <span class="multilang" lang="en">Join Date</span><span class="multilang" lang="id">bergabung</span>
-	 *
-	 * @param String $xmlstr The mlang XML string
-	 * @return String English term
-	 */
-	// public function parseBiName($xmlstr)
-	// {
-	// 	if (!empty($xmlstr)) {
-	// 		if (!is_object($this->domDoc)) {
-	// 			$this->domDoc = new \domDocument('1.0', 'utf-8');
-	// 			$this->domDoc->preserveWhiteSpace = false;
-	// 		}
-	// 		$this->domDoc->loadHTML($xmlstr);
-	// 		$span = $this->domDoc->getElementsByTagName('span');
-	// 		$str = $span->item(0)->nodeValue;
-	// 	} else {
-	// 		$str = '';
-	// 	}
-
-	// 	// Garbage
-	// 	$span = '';
-
-	// 	return $str;
-	// }
-
-	/**
-	 * Return the plural form of $str
-	 *
-	 * @param int $num Number
-	 * @param str $str Word to pluralize
-	 * @return String English term
-	 */
-	public function pluralizer($num, $str)
-	{
-		if (is_numeric($num) || !empty($str)) {
-			if ($num > 1) {
-				$str .= 's';
-			}
-		} else {
-			$str = '';
-		}
-
-		return $str;
 	}
 
 	public function generateFile($file, $content) {
