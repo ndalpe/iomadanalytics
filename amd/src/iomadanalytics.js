@@ -24,7 +24,16 @@ define(
                 $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
                     new Chart(document.getElementById("chart-grades").getContext("2d"),
                         {type:'bar', data:gData, options: {
-                            scales: {yAxes: [{ticks: {beginAtZero:true}}]}
+                            scales: {yAxes: [{ticks: {beginAtZero:true}}]},
+                            tooltips: {
+                                enabled: true,
+                                mode: 'single',
+                                callbacks: {
+                                    label: function(tooltip, data) {
+                                        return data.datasets[tooltip.datasetIndex].label + ' : ' + tooltip.yLabel + '%';
+                                    }
+                                }
+                            }
                         }}
                     );
                 });
@@ -36,7 +45,6 @@ define(
 
                         $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
 
-                        console.log(gData.companies[i].company);
                         new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
                                 type:'pie',
                                 data:gData.companies[i].graph,
