@@ -32,6 +32,13 @@ $PAGE->set_url('/report/iomadanalytics/view.php');
 
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
+
+// Set the HTML <title> tag
+$PAGE->set_title(get_string('report_page_title', 'report_iomadanalytics'));
+
+// Set the page heading (big title before content)
+$PAGE->set_heading(get_string('report_page_title', 'report_iomadanalytics'));
+
 $PAGE->requires->js_call_amd('report_iomadanalytics/iomadanalytics', 'init');
 
 

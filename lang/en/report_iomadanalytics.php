@@ -26,6 +26,8 @@
 
 $string['pluginname'] = 'report_iomadanalytics';
 
+$string['report_page_title'] = 'Kansai Paint Progress Report';
+
 $string['systemoverview_block_title'] = 'System Overview (All countries)';
 $string['countryselector_block_title'] = 'Country Selector';
 $string['gradesGraph_block_title'] = 'Grades - All Courses';
