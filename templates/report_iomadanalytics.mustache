@@ -30,75 +30,74 @@
     * keyMetric - string: average of all country
   * countries - array: contains all the country name along with their final test average
 }}
-<div class="row">
-  <div class="col-md-12">
-    <h2>{{systemoverview_block_title}}</h2>
-  </div>
-</div>
-<div class="card-deck">
-  {{> report_iomadanalytics/allCtryAvgBlock_rendered }}
-  {{> report_iomadanalytics/allCtryProgressBlock_rendered }}
-  {{> report_iomadanalytics/allCtryTimeCompBlock_rendered }}
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <h2>{{countryselector_block_title}}</h2>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="row">
-    {{# CntryList}}
-    <div class="col-md-6">
-    <div class="form-check">
-      <label class="form-check-label">
-        <input class="form-check-input" type="checkbox" value="{{country_abbr}}" id="{{country_abbr}}">{{country_name}}
-      </label>
-    </div>
-    <div class="country-{{country_abbr}}">
-      {{{companies}}}
-    </div>
-    </div>
-    {{/ CntryList}}
+<div class="report_section">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{systemoverview_block_title}}</h2>
     </div>
   </div>
-</div>
-<input type="button" id="btn" value="trigger" />
-
-
-
-
-
-
-{{!
-  Graph Final Grades
-}}
-<div class="row">
-  <div class="col-md-12">
-    <h2>{{gradesGraph_block_title}}</h2>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <canvas id="chart-grades"></canvas>
+  <div class="card-deck">
+    {{> report_iomadanalytics/allCtryAvgBlock_rendered }}
+    {{> report_iomadanalytics/allCtryProgressBlock_rendered }}
+    {{> report_iomadanalytics/allCtryTimeCompBlock_rendered }}
   </div>
 </div>
 
+<div class="report_section">
 
-
-
-
-{{!
-  Graph Progress
-}}
-<div class="row">
-  <div class="col-md-12">
-    <h2>{{progressGraph_block_title}}</h2>
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{countryselector_block_title}}</h2>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="row" id="progressGraph"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+      {{# CntryList}}
+      <div class="col-md-6">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" type="checkbox" value="{{country_abbr}}" id="{{country_abbr}}">{{country_name}}
+        </label>
+      </div>
+      <div class="country-{{country_abbr}}">
+        {{{companies}}}
+      </div>
+      </div>
+      {{/ CntryList}}
+      </div>
+    </div>
   </div>
-</div>
+  <input type="button" id="btn" value="trigger" />
+
+
+
+  {{!
+    Graph Final Grades
+  }}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{gradesGraph_block_title}}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <canvas id="chart-grades"></canvas>
+    </div>
+  </div>
+
+  {{!
+    Graph Progress
+  }}
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{progressGraph_block_title}}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row" id="progressGraph"></div>
+    </div>
+  </div>
+
+</div><!-- /report_section -->
