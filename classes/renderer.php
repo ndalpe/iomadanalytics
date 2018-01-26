@@ -60,6 +60,10 @@ class report_iomadanalytics implements renderable, templatable {
     public function companyList(renderer_base $output){
         return $this->data['CompanyList'];
     }
+
+    public function tabsList(renderer_base $output){
+        return $this->data['tabslist'];
+    }
 }
 
 //https://v4-alpha.getbootstrap.com/components/card/
@@ -89,6 +93,11 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
     public function render_companyList(report_iomadanalytics $widget) {
         $data['CompanyList'] = $widget->companyList($this);
         return parent::render_from_template('report_iomadanalytics/CompanyList', $data);
+    }
+
+    public function render_tabsList(report_iomadanalytics $widget) {
+        $data['tabslist'] = $widget->tabsList($this);
+        return parent::render_from_template('report_iomadanalytics/filters_tabs', $data);
     }
 
     // protected function render_report_iomadanalytics(report_iomadanalytics $widget) {
