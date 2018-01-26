@@ -7,13 +7,20 @@ class FilterTabs extends \core\task\scheduled_task
 {
 
 	// contain utilities function to process the report (contained in the locallib)
-	public $reportUtils;
+	// public $reportUtils;
 
 	// Contains all the countries in mdl_company
-	public $Countries;
+	// public $Countries;
 
 	// Contains all the companies in mdl_company
-	public $Companies;
+	// public $Companies;
+
+	// Contains all custom profile fields
+	public $Fields;
+
+	// Custom Profile Field to exclude from filters
+	// 11 : company : different country has different companies
+	public $FieldToExclude = '11';
 
 	// Get plugin renderer
 	public $output;
@@ -34,187 +41,190 @@ class FilterTabs extends \core\task\scheduled_task
 
 		$this->DB = $DB;
 
-		$this->reportUtils = new \report_iomadanalytics_utils();
+		// $this->reportUtils = new \report_iomadanalytics_utils();
 
-		$this->Countries = $this->reportUtils->getCountries(false);
+		// $this->Countries = $this->reportUtils->getCountries(false);
 
-		$this->Companies = $this->reportUtils->getCompanies();
+		// $this->Companies = $this->reportUtils->getCompanies();
+
+		$this->Fields = $this->DB->get_records_sql(
+			'SELECT id, shortname, name, datatype, param1 FROM mdl_user_info_field WHERE id NOT IN('.$this->FieldToExclude.') ORDER BY sortorder ASC;', array(), $limitfrom=0, $limitnum=0
+		);
 
 		$this->output = $PAGE->get_renderer('report_iomadanalytics');
 
 		$this->report = new \report_iomadanalytics();
 
-		// Average Fianl Test Result Block
-		// $this->graphFinalGradesAllCompanies();
-
-		// Course Progress All companies
-		// $this->graphProgressAllCompanies();
-
 		$tabList = $this->renderNavTabList();
 		$tabCont = $this->renderTabContent();
 
 		$this->generateFile(
-			'filters_tabs.mustache',
+			'filters_tabs_rendered.mustache',
 			$tabList."\n\n".$tabCont
 		);
 	}
 
+	/**
+	 * Render the necessary HTML to display the tab list
+	 *
+	*/
 	public function renderNavTabList()
 	{
-		return "renderNavTabList";
+		foreach ($this->Fields as $tab) {
+			if (!empty($tab->name)) {
+				$tabsList[] = array(
+					'id' => $tab->id,
+					'shortname' => $tab->shortname,
+					'name' => $this->parseBiName($tab->name)
+				);
+			}
+		}
+
+		$tabsListBlock = new \stdClass();
+		$tabsListBlock->name = 'tabslist';
+		$tabsListBlock->data = $tabsList;
+		$reportTab = new \report_iomadanalytics();
+		$reportTab->setTplBlock($tabsListBlock);
+		$tabsBlockRendered = $this->output->render_tabsList($reportTab);
+
+		return $tabsBlockRendered;
 	}
 
+	/**
+	 * Render the necessary HTML to display the tab content
+	 *
+	*/
 	public function renderTabContent()
 	{
+		foreach ($this->Fields as $tab) {
+			if (!empty($tab->name) && !empty($tab->shortname)) {
+
+				$tabFuncName = 'tabContent'.ucfirst($tab->shortname);
+
+				if (method_exists($this, $tabFuncName)) {
+					$options = $this->$tabFuncName($tab);
+				} else {
+					$options = $this->tabContentGeneric();
+				}
+
+				$tabsList[] = array(
+					'id' => $tab->id,
+					'shortname' => $tab->shortname,
+					'name' => $this->parseBiName($tab->name)
+				);
+			}
+		}
+
 		return "renderTabContent";
 	}
 
-	public function graphProgressAllCompanies()
+	/**
+	 * Return an array to available age group found in mdl_user_info_data
+	 *
+	 * @param object $tab The current custom profile field data
+	 * @return array
+	 *
+	*/
+	public function tabContentGeneric($tab)
 	{
-		$graphs = array();
 
-		foreach ($this->Companies as $key => $company) {
-			$notStarted = $this->reportUtils->getNotStartedCompany($company->id);
-			$started = $this->reportUtils->getStartedComapany($company->id);
-			$completed = $this->reportUtils->getCompletedCompany($company->id);
-			$all = $notStarted+$started+$completed;
-
-			$data = new \stdClass();
-			$data->data = [
-				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-				$this->reportUtils->getPercent($started, $all, $precision=false),
-				$this->reportUtils->getPercent($completed, $all, $precision=false)
-			];
-			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
-
-			$datasets = array();
-			$datasets['datasets'][] = $data;
-			$datasets['labels'] = array(
-				get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
-				get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
-				get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
-			);
-
-			$graph = new \stdClass();
-			$graph->graph = $datasets;
-			$graph->company = $company->shortname;
-			$graph->id = $company->id;
-
-			$graphs[] = $graph;
-		}
-
-		$allGraph = new \stdClass();
-		$allGraph->companies = $graphs;
-
-		// Generate the graph data file for the current cohort
-		$this->generateFile(
-			'graph_progress_all_companies.json',
-			json_encode($allGraph)
-		);
+		return "tabContentGeneric";
 	}
 
-	public function graphFinalGradesAllCompanies()
+	/**
+	 * Return an array containing available age group found in mdl_user_info_data
+	 *
+	 * @param object $tab The current custom profile field data
+	 * @return array
+	 *
+	*/
+	public function tabContentDob($tab)
 	{
-		// Simple counter to pick a color in barGraphColors
-		$colorIndex = 0;
+		// $aSql = "
+		// SELECT a.timefinish, u.data as dob, DATE_FORMAT(FROM_UNIXTIME(a.timefinish), '%Y') - DATE_FORMAT(FROM_UNIXTIME(u.data), '%Y') - (DATE_FORMAT(FROM_UNIXTIME(a.timefinish), '00-%m-%d') < DATE_FORMAT(FROM_UNIXTIME(u.data), '00-%m-%d')) AS age
+		// FROM moodle.mdl_quiz_attempts AS a
+		// INNER JOIN moodle.mdl_user_info_data AS u ON a.userid = u.userid
+		// WHERE a.quiz = 12 AND a.state = 'finished' AND u.fieldid = 1
+		// ORDER BY age ASC;";
+		// $Age = $this->DB->get_records_sql($aSql, null, $limitfrom=0, $limitnum=0);
+		$Age = $this->DB->get_records_sql('
+			SELECT id, userid, fieldid, data AS dob, TIMESTAMPDIFF(YEAR, FROM_UNIXTIME(data), CURDATE()) AS age
+			FROM mdl_user_info_data
+			WHERE fieldid =1;
+		', null, $limitfrom=0, $limitnum=0);
 
-		$Companies = $this->reportUtils->getCompanies();
-		foreach ($Companies as $company) {
+		// cleanup the null and the 0s
+		// TODO : optimize the SQL query to exclude the NULL and Zeros from result set
+		foreach ($Age as $key => $value) {
+			if ($value->age == 'NULL' || $value->age < '15') {
+				unset($Age[$key]);
+			}
+		}
 
-			// get all courses
-			$Courses = $this->reportUtils->getCourses();
+		// num of student who received a grade for final test
+		// $ageCount = count($Age);
 
-			foreach ($Courses as $course) {
+		// Create the age group (20, 25, 30, 35, etc)
+		//  array range ( mixed $start , mixed $end [, number $step = 1 ] )
+		$ageRange = range(15, 75, 10);
 
-				// get all quiz for this course
-				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
-				foreach ($Quiz as $quiz) {
-					// $grading_info = grade_get_grades($course->id, 'mod', 'quiz', $quiz->id, array_keys($Students));
-					// $labels[] = $grading_info->items[0]->name;
-					$labels[] = $quiz->name;
-					$d[] = $this->reportUtils->getAvgGrade($company->id, $quiz->id);
+		// build age group array
+		foreach ($ageRange as $key => $range) {
+
+			// Get the next range key
+			$nextRange = $key + 1;
+
+			// if last range is reach, do not create a next ageGroup enrty
+			if (isset($ageRange[$nextRange])) {
+				$ageMax = $ageRange[$nextRange] - 1;
+				$ageMin = $range;
+				$ageGroups[$key]['ageMin'] = $ageMin;
+				$ageGroups[$key]['ageMax'] = $ageMax;
+				$ageGroups[$key]['tsMin'] = 0;
+				$ageGroups[$key]['tsMax'] = 0;
+				$ageGroups[$key]['ageCnt'] = 0;
+			}
+		}
+
+		foreach ($Age as $key => $age) {
+			foreach ($ageGroups as $groupKey => $group) {
+
+				$intAge = intval($age->age);
+				if ($intAge >= $group['ageMin'] && $intAge <= $group['ageMax']) {
+					// Increment the age counter when group matches
+					$ageGroups[$groupKey]['ageCnt']++;
+
+					// set the min timestamp for age group
+					if ($ageGroups[$groupKey]['tsMin'] == 0) {
+						$ageGroups[$groupKey]['tsMin'] = $age->dob;
+					}
+					if ($ageGroups[$groupKey]['tsMin'] < $age->dob) {
+						$ageGroups[$groupKey]['tsMin'] = $age->dob;
+					}
+
+					// set the max timestamp for age group
+					if ($ageGroups[$groupKey]['tsMax'] == 0) {
+						$ageGroups[$groupKey]['tsMax'] = $age->dob;
+					}
+
+					if ($ageGroups[$groupKey]['tsMax'] > $age->dob) {
+						$ageGroups[$groupKey]['tsMax'] = $age->dob;
+					}
 				}
 			}
-			$data[] = (object) ['data' => $d];
-
-			// keep a copy of all grades for the combined graph
-			$allGrades['labels'] = $labels;
-			$dataAll[] = (object) [
-				'data' => $d,
-				'backgroundColor' => $this->reportUtils->getBarGraphColor($colorIndex, 3),
-				'borderColor' => $this->reportUtils->getBarGraphColor($colorIndex, 5),
-				'borderWidth' => 1,
-				'label' => $company->shortname,
-				'stack' => 'stak'.$company->shortname
-			];
-
-			// reset the graph per cohort data
-			unset($labels, $data, $d);
-
-			$colorIndex = $colorIndex + 1;
 		}
 
-		// Generate the graph data file for the current cohort
-		$this->generateFile(
-			'graph_grades_all_companies.json',
-			$this->makeJSON(array('labels'=>$allGrades['labels'],'datasets'=>$dataAll))
-		);
-	}
-
-/*
-	public function graphAllCountries()
-	{
-		$Companies = $this->reportUtils->getCompanies();
-		foreach ($Companies as $company) {
-			$Students = $this->reportUtils->getStudentsInCompany($company->id);
-
-
-			// get all courses
-			$Courses = $this->reportUtils->getCourses();
-
-			foreach ($Courses as $course) {
-
-				// get all quiz for this course
-				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
-				foreach ($Quiz as $quiz) {
-					$grading_info = grade_get_grades($course->id, 'mod', 'quiz', $quiz->id, array_keys($Students));
-
-					$labels[] = $grading_info->items[0]->name;
-					$d[] = $this->reportUtils->getAvgPercentGrades($grading_info);
-				}
+		// Build the checkbox options value
+		foreach ($ageGroups as $group) {
+			if ($group['ageCnt'] > 0) {
+				$options[] = array(
+					'value' => $group['tsMin'].'-'.$group['tsMax'],
+					'label' => $group['ageMin'].' - '.$group['ageMax']
+				);
 			}
-			$data[] = (object) ['data' => $d];
-
-			// keep a copy of all grades for the combined graph
-			$allGrades['labels'] = $labels;
-			$dataAll[] = (object) [
-				'data' => $d,
-				'label' => $company->shortname,
-				'stack' => 'stak'.$company->shortname
-			];
-
-			// reset the graph per cohort data
-			unset($labels, $data, $d);
 		}
 
-		// Generate the graph data file for the current cohort
-		$this->generateFile(
-			'graph_all_companies.json',
-			$this->makeJSON(array('labels'=>$allGrades['labels'], 'datasets'=>$dataAll))
-		);
-	}
-*/
-	private function makeJSON($vars)
-	{
-		$data = new \stdClass();
-		$data->labels = $vars['labels'];
-		$data->datasets = $vars['datasets'];
-
-		if (isset($vars['options'])) {
-			$data->options = $vars['options'];
-		}
-
-		return json_encode($data);
+		return $options;
 	}
 
 	/**
@@ -224,42 +234,25 @@ class FilterTabs extends \core\task\scheduled_task
 	 * @param String $xmlstr The mlang XML string
 	 * @return String English term
 	 */
-	// public function parseBiName($xmlstr)
-	// {
-	// 	if (!empty($xmlstr)) {
-	// 		if (!is_object($this->domDoc)) {
-	// 			$this->domDoc = new \domDocument('1.0', 'utf-8');
-	// 			$this->domDoc->preserveWhiteSpace = false;
-	// 		}
-	// 		$this->domDoc->loadHTML($xmlstr);
-	// 		$span = $this->domDoc->getElementsByTagName('span');
-	// 		$str = $span->item(0)->nodeValue;
-	// 	} else {
-	// 		$str = '';
-	// 	}
-
-	// 	// Garbage
-	// 	$span = '';
-
-	// 	return $str;
-	// }
-
-	/**
-	 * Return the plural form of $str
-	 *
-	 * @param int $num Number
-	 * @param str $str Word to pluralize
-	 * @return String English term
-	 */
-	public function pluralizer($num, $str)
+	public function parseBiName($xmlstr)
 	{
-		if (is_numeric($num) || !empty($str)) {
-			if ($num > 1) {
-				$str .= 's';
-			}
+		// if the string doesn't contain the multilang syntaxe, just return is as is
+		if (strpos($xmlstr, '<span') === false) {
+			return $xmlstr;
+		}
+
+		if (!empty($xmlstr)) {
+			$this->domDoc = new \domDocument('1.0', 'utf-8');
+			$this->domDoc->preserveWhiteSpace = false;
+			$this->domDoc->loadHTML($xmlstr);
+			$span = $this->domDoc->getElementsByTagName('span');
+			$str = $span->item(0)->nodeValue;
 		} else {
 			$str = '';
 		}
+
+		// Garbage
+		$span = '';
 
 		return $str;
 	}
