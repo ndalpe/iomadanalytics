@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template report_iomadanalytics/filter_tabs.mustache
+    @template report_iomadanalytics/filter_tabs_content_checkbox.mustache
 
-    Template which defines the filter's tabs
+    Template which defines the filter's individual checkbox
 
     Classes required for JS:
     * none
@@ -29,8 +29,6 @@
     * shortname - string: The tab anchor as stated in db.mdl_user_info_field.shortname
     * name - string: The tab name  as stated in db.mdl_user_info_field.name
 }}
-<ul class="nav nav-tabs" role="tablist">
-{{# tabslist}}
-<li class="nav-item"><a class="nav-link{{active}}" data-toggle="tab" href="#{{shortname}}" role="tab">{{name}}</a></li>
-{{/ tabslist}}
-</ul>
+{{# filterslist}}
+<div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" value="{{fieldid}}|{{value}}">{{label}}</label></div>
+{{/ filterslist}}

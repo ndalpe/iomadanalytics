@@ -19,8 +19,9 @@ class FilterTabs extends \core\task\scheduled_task
 	public $Fields;
 
 	// Custom Profile Field to exclude from filters
+	// 3  : nationality
 	// 11 : company : different country has different companies
-	public $FieldToExclude = '11';
+	public $FieldToExclude = '3,6,11';
 
 	// Get plugin renderer
 	public $output;
@@ -70,13 +71,24 @@ class FilterTabs extends \core\task\scheduled_task
 	*/
 	public function renderNavTabList()
 	{
+		$activeFlag = true;
 		foreach ($this->Fields as $tab) {
 			if (!empty($tab->name)) {
+
+				// add the active css class to the first .tab-pan
+				if ($activeFlag) {
+					$active = ' active';
+					$activeFlag = false;
+				}
+
 				$tabsList[] = array(
 					'id' => $tab->id,
 					'shortname' => $tab->shortname,
-					'name' => $this->parseBiName($tab->name)
+					'name' => $this->parseBiName($tab->name),
+					'active' => $active
 				);
+
+				$active = '';
 			}
 		}
 
@@ -96,6 +108,7 @@ class FilterTabs extends \core\task\scheduled_task
 	*/
 	public function renderTabContent()
 	{
+		$activeFlag = true;
 		foreach ($this->Fields as $tab) {
 			if (!empty($tab->name) && !empty($tab->shortname)) {
 
@@ -104,18 +117,50 @@ class FilterTabs extends \core\task\scheduled_task
 				if (method_exists($this, $tabFuncName)) {
 					$options = $this->$tabFuncName($tab);
 				} else {
-					$options = $this->tabContentGeneric();
+					$options = $this->tabContentGeneric($tab);
 				}
 
-				$tabsList[] = array(
-					'id' => $tab->id,
+				foreach ($options as $option) {
+					$checkboxList[] = array(
+						'fieldid' => $tab->id,
+						'value'   => $option['value'],
+						'label'   => $option['label'],
+					);
+				}
+
+				// add the active css class to the first .tab-pan
+				if ($activeFlag) {
+					$active = ' active';
+					$activeFlag = false;
+				}
+
+				$chkboxListBlock = new \stdClass();
+				$chkboxListBlock->name = 'filterslist';
+				$chkboxListBlock->data = $checkboxList;
+				$reportTab = new \report_iomadanalytics();
+				$reportTab->setTplBlock($chkboxListBlock);
+				$checkboxBlockRendered[] = array(
 					'shortname' => $tab->shortname,
-					'name' => $this->parseBiName($tab->name)
+					'tabContent' => $this->output->render_checkboxList($reportTab),
+					'active'  => $active
 				);
+
+				// reset the active css class bootstrap needs to show the .tab-pane
+				$active = '';
+
+				// reset field's checkbox
+				unset($checkboxList);
 			}
 		}
 
-		return "renderTabContent";
+		$tabPanListBlock = new \stdClass();
+		$tabPanListBlock->name = 'indTablist';
+		$tabPanListBlock->data = $checkboxBlockRendered;
+		$reportTab = new \report_iomadanalytics();
+		$reportTab->setTplBlock($tabPanListBlock);
+		$tabsBlockRendered = $this->output->render_tabPanList($reportTab);
+
+		return $tabsBlockRendered;
 	}
 
 	/**
@@ -127,8 +172,26 @@ class FilterTabs extends \core\task\scheduled_task
 	*/
 	public function tabContentGeneric($tab)
 	{
+		if (!empty($tab->param1)) {
+			$filterValues = explode("\n", $tab->param1);
+			if (is_array($filterValues)) {
+				foreach ($filterValues as $key => $value) {
+					$exists = $this->DB->record_exists_sql("SELECT * FROM mdl_user_info_data WHERE data='$value' AND fieldid=".$tab->id);
+					if ($exists) {
+						$options[] = array(
+							'value' => $value,
+							'label' => $value
+						);
+					}
+				}
+			}
+		}
+		return $options;
+	}
 
-		return "tabContentGeneric";
+	public function tabContentJoindate($tab)
+	{
+		return array();
 	}
 
 	/**
