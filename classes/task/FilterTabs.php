@@ -42,12 +42,6 @@ class FilterTabs extends \core\task\scheduled_task
 
 		$this->DB = $DB;
 
-		// $this->reportUtils = new \report_iomadanalytics_utils();
-
-		// $this->Countries = $this->reportUtils->getCountries(false);
-
-		// $this->Companies = $this->reportUtils->getCompanies();
-
 		$this->Fields = $this->DB->get_records_sql(
 			'SELECT id, shortname, name, datatype, param1 FROM mdl_user_info_field WHERE id NOT IN('.$this->FieldToExclude.') ORDER BY sortorder ASC;', array(), $limitfrom=0, $limitnum=0
 		);
