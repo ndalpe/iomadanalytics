@@ -5,16 +5,6 @@ require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
 
 class FilterTabs extends \core\task\scheduled_task
 {
-
-	// contain utilities function to process the report (contained in the locallib)
-	// public $reportUtils;
-
-	// Contains all the countries in mdl_company
-	// public $Countries;
-
-	// Contains all the companies in mdl_company
-	// public $Companies;
-
 	// Contains all custom profile fields
 	public $Fields;
 
