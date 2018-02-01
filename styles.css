@@ -1,3 +1,16 @@
+/* remove white bg color */
+#page-report-iomadanalytics-view #region-main-box #region-main {
+	padding: 0;
+}
+#page-report-iomadanalytics-view #region-main-box #region-main,
+#page-report-iomadanalytics-view #region-main-box #region-main > .card {
+	background-color: transparent;
+}
+#page-report-iomadanalytics-view #region-main-box #region-main,
+#page-report-iomadanalytics-view #region-main-box #region-main > .card {
+	border: none;
+	box-shadow: none;
+}
 table {
 	width: 100%;
 }
@@ -28,10 +41,11 @@ table {
 .bkgRed {
 	background-color: #cc0000;
 }
-
 .bkgBar {
 	background-color:#CCC;
+	border-radius: 5px;
 	height:8px;
+	overflow: hidden;
 	width:100%;
 }
 .bar {
@@ -40,4 +54,87 @@ table {
 }
 .report_section {
 	padding-bottom: 50px;
+}
+.section_title {
+	font-weight: bold;
+	color: #666;
+	font-size: 24px;
+	opacity: .9;
+	text-transform: uppercase;
+}
+.card_style {
+	background-color: #fff;
+	border-radius: 5px !important;
+	border: none;
+	box-shadow: 0 3px 3px 0 rgba(0,0,0,.25);
+	color: #666;
+	margin-bottom: 24px;
+	position: relative;
+}
+.country .custom-control-description {
+	font-weight: bold;
+}
+.country_company {
+	padding-left: 10px;
+}
+#filters_tab button {
+	margin: 10px;
+	width: 25%;
+}
+/******** Tabs ********/
+/******** https://bootsnipp.com/snippets/featured/simple-vertical-tab ********/
+div.bhoechie-tab-container{
+  background-clip: padding-box;
+  padding: 0 !important;
+  z-index: 10;
+}
+div.bhoechie-tab-menu{
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+div.bhoechie-tab-menu div.list-group{
+  margin-bottom: 0;
+}
+div.bhoechie-tab-menu div.list-group>a{
+  margin-bottom: 0;
+}
+div.bhoechie-tab-menu div.list-group>a .fa {
+  color: #3598db;
+}
+div.bhoechie-tab-menu div.list-group>a:first-child{
+  border-top-right-radius: 0;
+  -moz-border-top-right-radius: 0;
+}
+div.bhoechie-tab-menu div.list-group>a:last-child{
+  border-bottom-right-radius: 0;
+  -moz-border-bottom-right-radius: 0;
+}
+div.bhoechie-tab-menu div.list-group>a.active,
+div.bhoechie-tab-menu div.list-group>a.active .fa{
+  background-color: #3598db;
+  background-image: #3598db;
+  color: #ffffff;
+}
+div.bhoechie-tab-menu div.list-group>a.active:after{
+  border-bottom: 13px solid transparent;
+  border-left: 0;
+  border-left: 10px solid #3598db;
+  border-top: 13px solid transparent;
+  content: '';
+  left: 100%;
+  margin-top: -13px;
+  position: absolute;
+  top: 50%;
+}
+div.bhoechie-tab-content{
+  padding: 10px 20px 20px 20px;
+}
+div.bhoechie-tab div.bhoechie-tab-content:not(.active){
+  display: none;
+}
+/******** END Tabs ********/
+.padLR15 {
+	padding-left: 15px;
+	padding-right: 15px;
 }

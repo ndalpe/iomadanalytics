@@ -61,6 +61,10 @@ class report_iomadanalytics implements renderable, templatable {
         return $this->data['CompanyList'];
     }
 
+    public function filterList(renderer_base $output){
+        return $this->data['FilterList'];
+    }
+
     public function tabsList(renderer_base $output){
         return $this->data['tabslist'];
     }
@@ -101,6 +105,11 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
     public function render_companyList(report_iomadanalytics $widget) {
         $data['CompanyList'] = $widget->companyList($this);
         return parent::render_from_template('report_iomadanalytics/CompanyList', $data);
+    }
+
+    public function render_filterList(report_iomadanalytics $widget) {
+        $data['FilterList'] = $widget->filterList($this);
+        return parent::render_from_template('report_iomadanalytics/FilterList', $data);
     }
 
     public function render_tabsList(report_iomadanalytics $widget) {

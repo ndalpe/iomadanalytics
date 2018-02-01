@@ -29,7 +29,16 @@ $string['pluginname'] = 'report_iomadanalytics';
 $string['report_page_title'] = 'Kansai Paint Progress Report';
 
 $string['systemoverview_block_title'] = 'System Overview (All countries)';
-$string['countryselector_block_title'] = 'Country Selector';
+$string['detailledgrades_block_title'] = 'Detailled Grades per country';
+
+$string['countryselector_block_title'] = 'Countries';
+$string['countryselector_tab_title'] = 'Filter grades by company';
+$string['countryselector_tab_help'] = 'Click on a country to select/unselect all company beneath it.';
+
+$string['filtersselector_block_title'] = 'Filters';
+$string['filtersselector_tab_title'] = 'Filter grades by profile';
+$string['filtersselector_tab_help'] = 'The selected filter will only display grades of selected country and company.';
+
 $string['gradesGraph_block_title'] = 'Grades - All Courses';
 $string['progressGraph_block_title'] = 'Progress';
 

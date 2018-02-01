@@ -48,8 +48,6 @@ $output = $PAGE->get_renderer('report_iomadanalytics');
 $report = new report_iomadanalytics();
 $reportUtils = new report_iomadanalytics_utils();
 
-// CntryList
-
 /*****************************************************/
 /************** Country Selector Block ***************/
 /*****************************************************/
@@ -88,12 +86,46 @@ $cntrySelBlockData->data = $countiesList;
 $report->setTplBlock($cntrySelBlockData);
 
 
+/*****************************************************/
+/************** Filters Selector Block ***************/
+/*****************************************************/
+// Custom Profile Field to exclude from filters
+// 3  : nationality
+// 11 : company : different country has different companies
+$Filters = $DB->get_records_sql(
+	'SELECT id, shortname, name, datatype, param1 FROM mdl_user_info_field WHERE id NOT IN(3,11) ORDER BY sortorder ASC;', array(), $limitfrom=0, $limitnum=0
+);
+
+foreach ($Filters as $filter) {
+	$filtersList[] = array(
+		'id' => $companie->id,
+		'shortname' => $filter->shortname,
+		'name' => $reportUtils->parseBiName($filter->name),
+		'datatype' => $filter->datatype,
+		'param1' => $filter->param1
+	);
+}
+// set Filters List in template
+$filtersListBlock = new \stdClass();
+$filtersListBlock->name = 'FilterList';
+$filtersListBlock->data = $filtersList;
+$report->setTplBlock($filtersListBlock);
+
 /******************************************/
 /************** Set UI text ***************/
 /******************************************/
 $uiText = new \stdClass();
 $uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
+$uiText->detailledgrades_block_title = get_string('detailledgrades_block_title', 'report_iomadanalytics');
+
 $uiText->countryselector_block_title = get_string('countryselector_block_title', 'report_iomadanalytics');
+$uiText->countryselector_tab_title = get_string('countryselector_tab_title', 'report_iomadanalytics');
+$uiText->countryselector_tab_help = get_string('countryselector_tab_help', 'report_iomadanalytics');
+
+$uiText->filtersselector_block_title = get_string('filtersselector_block_title', 'report_iomadanalytics');
+$uiText->filtersselector_tab_title = get_string('filtersselector_tab_title', 'report_iomadanalytics');
+$uiText->filtersselector_tab_help = get_string('filtersselector_tab_help', 'report_iomadanalytics');
+
 $uiText->gradesGraph_block_title = get_string('gradesGraph_block_title', 'report_iomadanalytics');
 $uiText->progressGraph_block_title = get_string('progressGraph_block_title', 'report_iomadanalytics');
 $report->setTplVars($uiText);
