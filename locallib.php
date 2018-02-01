@@ -409,6 +409,36 @@ class report_iomadanalytics_utils {
             return round($p, $precision);
         }
     }
+
+    /**
+     * Retrieve the english part of a multi-lang string
+     * ie: <span class="multilang" lang="en">Join Date</span><span class="multilang" lang="id">bergabung</span>
+     *
+     * @param String $xmlstr The mlang XML string
+     * @return String English term
+     */
+    public function parseBiName($xmlstr)
+    {
+        // if the string doesn't contain the multilang syntaxe, just return is as is
+        if (strpos($xmlstr, '<span') === false) {
+            return $xmlstr;
+        }
+
+        if (!empty($xmlstr)) {
+            $this->domDoc = new \domDocument('1.0', 'utf-8');
+            $this->domDoc->preserveWhiteSpace = false;
+            $this->domDoc->loadHTML($xmlstr);
+            $span = $this->domDoc->getElementsByTagName('span');
+            $str = $span->item(0)->nodeValue;
+        } else {
+            $str = '';
+        }
+
+        // Garbage
+        $span = '';
+
+        return $str;
+    }
 }
 
 
