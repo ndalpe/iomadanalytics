@@ -90,7 +90,7 @@ $report->setTplBlock($cntrySelBlockData);
 /************** Filters Selector Block ***************/
 /*****************************************************/
 // Custom Profile Field to exclude from filters
-// 3  : nationality
+// 3  : nationality : abandoned since the data was mono-nationality
 // 11 : company : different country has different companies
 $Filters = $DB->get_records_sql(
 	'SELECT id, shortname, name, datatype, param1 FROM mdl_user_info_field WHERE id NOT IN(3,11) ORDER BY sortorder ASC;', array(), $limitfrom=0, $limitnum=0

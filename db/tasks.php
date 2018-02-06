@@ -20,12 +20,21 @@ $tasks = array(
 		'month' => '*'
 	),
 	array(
-		'classname' => 'report_iomadanalytics\task\FilterTabs',
+		'classname' => 'report_iomadanalytics\task\GradesFilters',
 		'blocking' => 0,
 		'minute' => '0',
-		'hour' => '3',
+		'hour' => '*',
 		'day' => '*',
-		'dayofweek' => '1-5',
+		'dayofweek' => '*',
 		'month' => '*'
-	)
+	),
+	// array(
+	// 	'classname' => 'report_iomadanalytics\task\FilterTabs',
+	// 	'blocking' => 0,
+	// 	'minute' => '0',
+	// 	'hour' => '3',
+	// 	'day' => '*',
+	// 	'dayofweek' => '1-5',
+	// 	'month' => '*'
+	// )
 );
