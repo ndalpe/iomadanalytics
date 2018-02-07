@@ -98,7 +98,7 @@ $Filters = $DB->get_records_sql(
 
 foreach ($Filters as $filter) {
 	$filtersList[] = array(
-		'id' => $companie->id,
+		'id' => $filter->id,
 		'shortname' => $filter->shortname,
 		'name' => $reportUtils->parseBiName($filter->name),
 		'datatype' => $filter->datatype,

@@ -41,6 +41,10 @@ table {
 .bkgRed {
 	background-color: #cc0000;
 }
+button.bkgBtn {
+	background-color: #0085ac;
+	border-color: #00789c;
+}
 .bkgBar {
 	background-color:#CCC;
 	border-radius: 5px;

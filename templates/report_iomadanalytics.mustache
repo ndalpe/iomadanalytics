@@ -88,10 +88,11 @@
         </div>
         <!-- profile section -->
         <div id="filters_tab" class="bhoechie-tab-content">
+          <input type="hidden" name="selectedFilter" id="selectedFilter" value="all" />
           <h4>{{filtersselector_tab_title}}</h4>
           <p class="text-muted"><i class="fa fa-info"></i> {{filtersselector_tab_help}}</p>
           {{# FilterList}}
-          <button type="button" id="{{shortname}}" class="btn btn-primary">{{name}}</button>
+          <button type="button" id="{{shortname}}" data-filterid="{{id}}" class="btn btn-primary">{{name}}</button>
           {{/ FilterList}}
         </div>
       </div>

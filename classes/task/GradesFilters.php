@@ -254,9 +254,9 @@ class GradesFilters extends \core\task\scheduled_task
 					$a->data[] = round($grade['avgGrade']);
 				}
 			} else {
-				// zero fill the array if no grades
+				// zero fill the array if no grades are found
 				// array array_fill ( int $start_index , int $num , mixed $value )
-				$a = array_fill(0, count($this->Courses), 0);
+				$a->data = array_fill(0, count($this->Courses), 0);
 			}
 			$datasets[] = $a;
 			unset($a);
