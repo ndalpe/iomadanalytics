@@ -13,11 +13,21 @@ define(
                 // TODO: Ajax this
                 var countries = ['ID', 'MY'],
                 pluginPath = '/report/iomadanalytics/templates/',
-                ProgressChartId = '';
+                gradesGraph = null;
+                // ProgressChartId = '';
 
                 // Make the default final grades graph of all companies
                 $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
-                    new Chart(document.getElementById("chart-grades").getContext("2d"),
+                    makeGradesGraph(gData);
+                });
+
+                function makeGradesGraph(gData) {
+
+                    if (gradesGraph!==null) {
+                        gradesGraph.destroy();
+                    }
+
+                    gradesGraph = new Chart(document.getElementById("chart-grades").getContext("2d"),
                         {type:'bar', data:gData, options: {
                             scales: {yAxes: [{ticks: {beginAtZero:true}}]},
                             tooltips: {
@@ -31,62 +41,39 @@ define(
                             }
                         }}
                     );
-                });
+                } //makeGradesGraph()
 
                 // Make the default progress graph of all companies
-                $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
-                    for (i in gData.companies) {
-                        ProgressChartId = 'chart-progress-'+gData.companies[i].id;
+                // $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
+                //     for (i in gData.companies) {
+                //         ProgressChartId = 'chart-progress-'+gData.companies[i].id;
 
-                        $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
+                //         $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
 
-                        new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
-                                type:'pie',
-                                data:gData.companies[i].graph,
-                                options:{
-                                    legend: false,
-                                    title: {text:gData.companies[i].company, display:true, position:'bottom'},
-                                    tooltips: {
-                                        enabled: true,
-                                        mode: 'single',
-                                        callbacks: {
-                                            label: function(tooltip, data) {
-                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                });//progress graph
+                //         new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
+                //                 type:'pie',
+                //                 data:gData.companies[i].graph,
+                //                 options:{
+                //                     legend: false,
+                //                     title: {text:gData.companies[i].company, display:true, position:'bottom'},
+                //                     tooltips: {
+                //                         enabled: true,
+                //                         mode: 'single',
+                //                         callbacks: {
+                //                             label: function(tooltip, data) {
+                //                                 return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
+                //                             }
+                //                         }
+                //                     }
+                //                 }
+                //             }
+                //         );
+                //     }
+                // });//progress graph
 
                 // Add listener to country's checkbox in the country selector
                 for (var i = 0; i < countries.length; i++) {
                     toggleChekbox(countries[i]);
-                }
-
-                // refresh the grades graph when a company checkbox is checked/unchecked
-                $(".country_company input").change(function(){
-                    refreshGradesGraph();
-                });
-
-                function refreshGradesGraph() {
-                    console.log('refreshGradesGraph');
-                    $.getJSON(pluginPath+'graphGradesAllCompany.json', function(data){
-                        $(".country_company input").each(function(){
-                            if (this.checked) {
-                                var selectedFilter = $("#selectedFilter").val();
-                                console.log(selectedFilter);
-                                if (selectedFilter != 'all') {
-                                    console.log(data[$(this).val()]['filters'][selectedFilter]);
-                                }
-                            }
-                        });
-
-                        return data;
-                    });
-
                 }
 
                 // check/uncheck all company under a country when the country checkbox is clicked
@@ -103,18 +90,40 @@ define(
                     });
                 } // end toggleChekbox()
 
-                $("#btn").click(function(){
-                    testajax();
+                // $("#btn").click(function(){refreshGradesGraph();});
+
+                // refresh the grades graph when a company checkbox is checked/unchecked
+                $(".country_company input").change(function(){
+                    refreshGradesGraph();
                 });
-                function testajax(){
-                    alert('me');
+
+                function refreshGradesGraph() {
+
+                    // Get selected companies
+                    var companies = [];
+                    $(".country_company input").each(function(){
+                        if (this.checked) {
+                            companies.push($(this).attr('id'));
+                        }
+                    });
+
+                    // get the selected filter
+                    var filters = [];
+                    filters.push($("#selectedFilter").val());
+
+                    // build param object
+                    var params = JSON.stringify({companies:companies, filters:filters});
+
                     var promises = ajax.call([
-                        {methodname: 'report_iomadanalytics_filters', args: {filters: 'pluginname'}}
+                        {methodname: 'report_iomadanalytics_filters', args: {filters: params}}
                     ]);
 
-                    promises[0].done(function(response) {
-                        alert('mod_wiki/pluginname is' + response);
-                    }).fail(function(response) {
+                    promises[0]
+                    .done(function(response) {
+                        makeGradesGraph($.parseJSON(response));
+                    })
+                    .fail(function(response) {
+                        console.log('fail');
                         console.log(response);
                     });
                 }

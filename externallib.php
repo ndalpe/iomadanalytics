@@ -1,6 +1,10 @@
 <?php
 require_once("$CFG->libdir/externallib.php");
 
+require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
+require_once($CFG->dirroot . '/report/iomadanalytics/classes/GradesFilters.php');
+require_once($CFG->dirroot . '/report/iomadanalytics/classes/FlatFile.php');
+
 class report_iomadanalytics_external extends external_api {
 
     /**
@@ -9,7 +13,7 @@ class report_iomadanalytics_external extends external_api {
      */
     public static function filter_grades_parameters() {
         return new external_function_parameters(
-                array('filters' => new external_value(PARAM_TEXT, 'The list of filters', VALUE_DEFAULT, ''))
+                array('filters' => new external_value(PARAM_TEXT, 'The list of filters and companies', VALUE_DEFAULT, ''))
         );
     }
 
@@ -21,10 +25,7 @@ class report_iomadanalytics_external extends external_api {
         global $USER;
 
         //Parameter validation
-        $params = self::validate_parameters(
-            self::filter_grades_parameters(),
-            array('filters' => $filters)
-        );
+        $params = self::validate_parameters(self::filter_grades_parameters(), array('filters'=>$filters));
 
         //Context validation
         //OPTIONAL but in most web service it should present
@@ -37,7 +38,14 @@ class report_iomadanalytics_external extends external_api {
         //     throw new moodle_exception('cannotviewprofile');
         // }
 
-        return 'hello from WS';
+        $param = json_decode($filters);
+
+        $d = new GradesFilters();
+        $d->setFilter($param->filters[0]);
+        $d->setCompanies($param->companies);
+        $return = $d->getFiltersData();
+
+        return json_encode($return);
     }
 
     /**
@@ -48,3 +56,14 @@ class report_iomadanalytics_external extends external_api {
         return new external_value(PARAM_TEXT, 'The filtered grades');
     }
 }
+
+
+// ob_start();
+// var_dump(json_encode($return));
+// $content = ob_get_contents();
+// ob_end_clean();
+
+// $f = new FlatFile();
+// $f->setFileName('ajax.txt');
+// $f->setFileContent($content);
+// $f->writeToFile();exit();
