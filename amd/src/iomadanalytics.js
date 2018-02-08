@@ -150,10 +150,8 @@ define(
                  * param: state bool - whether the input should be disable or not
                 */
                 function freezeControl(state) {
-                    // freeze countries checkbox
-                    $(".country_company input, .country input, #filters_tab button").each(function(){
-                        $(this).attr('disabled', state);
-                    });
+                    // freeze countries checkbox and filters button
+                    $(".country_company input, .country input, #filters_tab button").attr('disabled', state);
                 }
 
                 /**
