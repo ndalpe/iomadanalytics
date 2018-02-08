@@ -150,8 +150,6 @@ class GradesFilters
 		return $fieldDataset;
 	}
 
-
-
 	/**
 	 * Get grades from filter who doesn't need specific rendering (such as age group)
 	 *
@@ -170,6 +168,164 @@ class GradesFilters
 	*/
 	public function fieldContentJoindate($field)
 	{
+		$companyids = $this->getCompanies('string');
+
+		$Joindate = $this->DB->get_records_sql("
+			SELECT
+			mdl_user_info_data.id, mdl_user_info_data.userid, mdl_user_info_data.fieldid, mdl_user_info_data.data AS joindate, DATE_FORMAT(FROM_UNIXTIME(data), '%Y') AS joinyear,
+			mdl_company_users.companyid, mdl_company_users.userid
+			FROM mdl_user_info_data
+			INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
+			WHERE mdl_user_info_data.fieldid=6 AND mdl_company_users.companyid IN ({$companyids})
+			ORDER BY CONVERT(mdl_user_info_data.data, UNSIGNED INTEGER);"
+		, array(), $limitfrom=0, $limitnum=0);
+
+		// cleanup the null
+		// TODO : optimize the SQL query to exclude the NULL and Zeros from result set
+		foreach ($Joindate as $key => $jd) {
+			if (is_null($jd->joinyear)) {
+				unset($Joindate[$key]);
+			}
+		}
+
+		// get the min joindate
+		$min = reset($Joindate);
+
+		// get the max joindate
+		$max = end($Joindate);
+		reset($Joindate);
+
+		// Create join year group (1980, 1990, 2000, 2010, etc)
+		//  array range ( mixed $start , mixed $end [, number $step = 1 ] )
+		$joinYearRange = range($min->joinyear, $max->joinyear, 10);
+
+		// build age group array
+		foreach ($joinYearRange as $key => $range) {
+
+			// Get the next range key
+			$nextRange = $key + 1;
+
+			// if last range is reach, create a last range with the last range and $max->joinyear
+			// 2000-2009, 2010-today
+			if (isset($joinYearRange[$nextRange])) {
+				$ageMax = $joinYearRange[$nextRange] - 1;
+				$ageMin = $range;
+				$ageGroups[$key]['ageMin'] = $ageMin;
+				$ageGroups[$key]['ageMax'] = $ageMax;
+				$ageGroups[$key]['tsMin'] = 0;
+				$ageGroups[$key]['tsMax'] = 0;
+				$ageGroups[$key]['ageCnt'] = 0;
+			} else {
+				$ageMax = (int)$max->joinyear;
+				$ageMin = $range;
+				$ageGroups[$key]['ageMin'] = $ageMin;
+				$ageGroups[$key]['ageMax'] = $ageMax;
+				$ageGroups[$key]['tsMin'] = 0;
+				$ageGroups[$key]['tsMax'] = 0;
+				$ageGroups[$key]['ageCnt'] = 0;
+			}
+		}
+
+		// build the join date min/max values
+		foreach ($Joindate as $age) {
+			foreach ($ageGroups as $groupKey => $group) {
+
+				$intAge = intval($age->joinyear);
+				if ($intAge >= $group['ageMin'] && $intAge <= $group['ageMax']) {
+					// Increment the age counter when group matches
+					$ageGroups[$groupKey]['ageCnt']++;
+
+					// set the min timestamp for age group
+					if ($ageGroups[$groupKey]['tsMin'] == 0) {
+						$ageGroups[$groupKey]['tsMin'] = $age->joindate;
+					}
+					if ($ageGroups[$groupKey]['tsMin'] < $age->joindate) {
+						$ageGroups[$groupKey]['tsMin'] = $age->joindate;
+					}
+
+					// set the max timestamp for age group
+					if ($ageGroups[$groupKey]['tsMax'] == 0) {
+						$ageGroups[$groupKey]['tsMax'] = $age->joindate;
+					}
+
+					if ($ageGroups[$groupKey]['tsMax'] > $age->joindate) {
+						$ageGroups[$groupKey]['tsMax'] = $age->joindate;
+					}
+				}
+			}
+		}
+
+		// Remove age group with 0 student in it
+		foreach ($ageGroups as $key => $group) {
+			if ($group['ageCnt'] === 0) {
+				unset($ageGroups[$key]);
+			}
+		}
+
+		// get the average grade per age groups for all tests
+		foreach ($ageGroups as $key => $group) {
+
+			// get the grades of $Students
+			foreach ($this->Courses as $course) {
+
+				// get all quiz for this course
+				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
+				foreach ($Quiz as $quiz) {
+					if ($group['ageCnt'] == 1) {
+						$Students = $this->DB->get_records_sql("
+							SELECT AVG(mdl_quiz_grades.grade) AS grades
+							FROM mdl_user_info_data
+							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
+							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
+							WHERE mdl_user_info_data.fieldid=6 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND data='".$group['tsMin']."'
+							GROUP BY mdl_quiz_grades.quiz",
+							array('quizid'=>$quiz->id)
+						);
+					} else {
+						$Students = $this->DB->get_records_sql("
+							SELECT AVG(mdl_quiz_grades.grade) AS grades
+							FROM mdl_user_info_data
+							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
+							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
+							WHERE mdl_user_info_data.fieldid=6 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND (data>'".$group['tsMax']."' AND data<'".$group['tsMin']."')
+							GROUP BY mdl_quiz_grades.quiz",
+							array('quizid'=>$quiz->id)
+						);
+					}
+					$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
+					$avgGrades = reset($Students);
+					$avgGrade = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
+					$ageGroups[$key]['avgGrade'][] = array(
+						'avgGrade' => $avgGrade,
+						'quiz' => $quiz->name
+					);
+				}
+			}
+		}
+
+		foreach ($ageGroups as $group) {
+			$a = new \stdClass();
+			$a->label = $group['ageMin'].'-'.$group['ageMax'];
+			$a->stack = 'stack'.$group['ageMin'].$group['ageMax'];
+			if (isset($group['avgGrade'])) {
+				foreach ($group['avgGrade'] as $grade) {
+					$a->data[] = round($grade['avgGrade']);
+				}
+			} else {
+				// zero fill the array if no grades are found
+				// array array_fill ( int $start_index , int $num , mixed $value )
+				$a->data = array_fill(0, count($this->Courses), 0);
+			}
+			$datasets[] = $a;
+			unset($a);
+		}
+
+		// if company doesn't have any age group yet (no registered student)
+		if (!isset($datasets)) {
+			$datasets[] = false;
+		}
+
+		return $datasets;
 
 	}
 

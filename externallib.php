@@ -62,8 +62,12 @@ class report_iomadanalytics_external extends external_api {
 // var_dump(json_encode($return));
 // $content = ob_get_contents();
 // ob_end_clean();
-
 // $f = new FlatFile();
 // $f->setFileName('ajax.txt');
 // $f->setFileContent($content);
+// $f->writeToFile();exit();
+
+// $f = new FlatFile();
+// $f->setFileName('ajax.txt');
+// $f->setObContent($datasets);
 // $f->writeToFile();exit();
