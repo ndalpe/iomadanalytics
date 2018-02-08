@@ -303,10 +303,14 @@ class GradesFilters
 			}
 		}
 
-		foreach ($ageGroups as $group) {
+		foreach ($ageGroups as $key => $group) {
 			$a = new \stdClass();
 			$a->label = $group['ageMin'].'-'.$group['ageMax'];
 			$a->stack = 'stack'.$group['ageMin'].$group['ageMax'];
+			$a->backgroundColor = $this->reportUtils->getBarGraphColor($key, 3);
+			$a->borderColor = $this->reportUtils->getBarGraphColor($key, 5);
+			$a->borderWidth = 1;
+
 			if (isset($group['avgGrade'])) {
 				foreach ($group['avgGrade'] as $grade) {
 					$a->data[] = round($grade['avgGrade']);
@@ -455,10 +459,13 @@ class GradesFilters
 			}
 		}
 
-		foreach ($ageGroups as $group) {
+		foreach ($ageGroups as $key => $group) {
 			$a = new \stdClass();
 			$a->label = $group['ageMin'].'-'.$group['ageMax'];
 			$a->stack = 'stack'.$group['ageMin'].$group['ageMax'];
+			$a->backgroundColor = $this->reportUtils->getBarGraphColor($key, 3);
+			$a->borderColor = $this->reportUtils->getBarGraphColor($key, 5);
+			$a->borderWidth = 1;
 			if (isset($group['avgGrade'])) {
 				foreach ($group['avgGrade'] as $grade) {
 					$a->data[] = round($grade['avgGrade']);
