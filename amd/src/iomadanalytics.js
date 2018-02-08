@@ -135,11 +135,9 @@ define(
                 function toggleChekbox(country) {
                     // check/uncheck all checkbox of the country
                     $("#"+country).click(function() {
-                        if ($("#"+country).prop('checked') === true) {
-                            $('.country-'+country+' input').prop('checked', true);
-                        } else {
-                            $('.country-'+country+' input').prop('checked', false);
-                        }
+                        // Set the company checkbox state eq to the country's checkbox state
+                        $('.country-'+country+' input').prop('checked', $(this).prop('checked'));
+
                         // refresh grades graph with new country selection
                         refreshGradesGraph();
                     });
