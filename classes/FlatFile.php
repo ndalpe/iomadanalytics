@@ -22,6 +22,14 @@ class FlatFile
 		$this->content = $content;
 	}
 
+	public function setObContent($ob)
+	{
+		ob_start();
+		var_dump($ob);
+		$this->content = ob_get_contents();
+		ob_end_clean();
+	}
+
 	public function writeToFile()
 	{
 		global $CFG;
