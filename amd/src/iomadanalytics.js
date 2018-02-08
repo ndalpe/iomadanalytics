@@ -97,6 +97,9 @@ define(
                     .fail(function(response) {
                         console.log('fail');
                         console.log(response);
+
+                        // unfreeze controls
+                        freezeControl(false);
                     });
                 }
 
