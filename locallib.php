@@ -185,17 +185,20 @@ class report_iomadanalytics_utils {
         return $percent;
     }
 
-    // get user who have not started the course in a country
+
+    /**
+     * Get the number of student who have not answered a quiz yet in a specific country
+     *
+     * string $country The country abbr (ie.: ID or MY or ...)
+    */
     public function getNotStarted($country) {
-        $c = 0;
-        $Attemps = $this->getAttemps();
-        $Users = $this->getUsersFromCountry($country);
-        foreach ($Users as $user) {
-            if (array_search($user->id, array_column($Attemps, 'userid')) === false) {
-                $c = $c + 1;
-            }
-        }
-        return $c;
+        return $this->DB->count_records_sql("
+            SELECT COUNT(mdl_user.id) AS userid
+            FROM mdl_user
+            LEFT JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
+            WHERE country=:country AND suspended = 0 AND deleted = 0 AND mdl_quiz_attempts.quiz IS NULL;",
+            array('country'=>$country)
+        );
     }
 
     // get user who have not started the course in a country
@@ -214,7 +217,7 @@ class report_iomadanalytics_utils {
     /**
      * Get the number of student who started the course but not finish the final test in a specific country
      *
-     * string $company_id The country abbr (ie.: ID or MY or ...)
+     * string $country The country abbr (ie.: ID or MY or ...)
     */
     public function getStarted($country) {
         $c = 0;
