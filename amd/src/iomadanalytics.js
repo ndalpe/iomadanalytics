@@ -13,8 +13,8 @@ define(
                 // TODO: Ajax this
                 var countries = ['ID', 'MY'],
                 pluginPath = '/report/iomadanalytics/templates/',
-                gradesGraph = null;
-                // ProgressChartId = '';
+                gradesGraph = null,
+                ProgressChartId = '';
 
                 // Make the default final grades graph of all companies
                 $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
@@ -22,32 +22,32 @@ define(
                 });
 
                 // Make the default progress graph of all companies
-                // $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
-                //     for (i in gData.companies) {
-                //         ProgressChartId = 'chart-progress-'+gData.companies[i].id;
+                $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
+                    for (i in gData.companies) {
+                        ProgressChartId = 'chart-progress-'+gData.companies[i].id;
 
-                //         $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
+                        $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
 
-                //         new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
-                //                 type:'pie',
-                //                 data:gData.companies[i].graph,
-                //                 options:{
-                //                     legend: false,
-                //                     title: {text:gData.companies[i].company, display:true, position:'bottom'},
-                //                     tooltips: {
-                //                         enabled: true,
-                //                         mode: 'single',
-                //                         callbacks: {
-                //                             label: function(tooltip, data) {
-                //                                 return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
-                //                             }
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //         );
-                //     }
-                // });//progress graph
+                        new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
+                                type:'pie',
+                                data:gData.companies[i].graph,
+                                options:{
+                                    legend: false,
+                                    title: {text:gData.companies[i].company, display:true, position:'bottom'},
+                                    tooltips: {
+                                        enabled: true,
+                                        mode: 'single',
+                                        callbacks: {
+                                            label: function(tooltip, data) {
+                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        );
+                    }
+                });//progress graph
 
                 // Add listener to country's checkbox in the country selector
                 for (var i = 0; i < countries.length; i++) {

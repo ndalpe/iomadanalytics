@@ -201,17 +201,24 @@ class report_iomadanalytics_utils {
         );
     }
 
-    // get user who have not started the course in a country
-    public function getNotStartedCompany($company_id) {
-        $c = 0;
-        $Attemps = $this->getAttemps();
-        $Users = $this->getStudentsInCompany($company_id);
-        foreach ($Users as $user) {
-            if (array_search($user->id, array_column($Attemps, 'userid')) === false) {
-                $c = $c + 1;
-            }
-        }
-        return $c;
+    /**
+     * Get the number of student who have not answered a quiz yet in a specific company/companies
+     *
+     * array $companies_id The array of company id
+    */
+    public function getNotStartedCompany($companies_id) {
+
+        // stringify the companies id
+        $companyid = implode(',', $companies_id);
+
+        return $this->DB->count_records_sql("
+            SELECT COUNT(cu.userid) AS userid
+            FROM mdl_company_users AS cu
+                LEFT JOIN mdl_quiz_attempts AS qa ON cu.userid = qa.userid
+                INNER JOIN mdl_user AS u ON cu.userid = u.id
+            WHERE companyid IN({$companyid}) AND u.suspended = 0 AND u.deleted = 0 AND qa.quiz IS NULL;",
+            array()
+        );
     }
 
     /**
@@ -287,7 +294,6 @@ class report_iomadanalytics_utils {
         $Users->close();
         return $c;
     }
-
 
     /**
      * Get the number of student who completed the final test in a specific country
