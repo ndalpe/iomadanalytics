@@ -285,24 +285,36 @@ class report_iomadanalytics_utils {
         return $c;
     }
 
+
+    /**
+     * Get the number of student who completed the final test in a specific country
+     *
+     * string $company_id The country abbr (ie.: ID or MY or ...)
+    */
     public function getCompleted($country) {
-        $Users = $this->DB->count_records_sql(
-            'SELECT count(u.id) AS total FROM mdl_user AS u
+        $Users = $this->DB->count_records_sql("
+            SELECT count(u.id) AS total FROM mdl_user AS u
             INNER JOIN mdl_quiz_attempts AS a ON u.id = a.userid
-            WHERE u.country=:country AND a.quiz=12 AND u.suspended=0 AND u.deleted=0;',
+            WHERE u.country=:country AND a.quiz=12 AND a.state='finished' AND u.suspended=0 AND u.deleted=0;",
             array('country'=>$country), $limitfrom=0, $limitnum=0
         );
         return $Users;
     }
 
-    public function getCompletedCompany($company_id) {
-        $Users = $this->DB->count_records_sql('
+    /**
+     * Get the number of student who completed the final test in a specific company
+     *
+     * array $companies_id The array of company id
+    */
+    public function getCompletedCompany($companies_id) {
+        $companyid = implode(',', $companies_id);
+        $Users = $this->DB->count_records_sql("
             SELECT count(u.id) AS total
             FROM mdl_company_users AS cu
             INNER JOIN mdl_quiz_attempts AS a ON cu.userid = a.userid
             INNER JOIN mdl_user AS u ON cu.userid = u.id
-            WHERE cu.companyid=:companyid AND a.quiz=12 AND u.suspended=0 AND u.deleted=0;',
-            array('companyid'=>$company_id), $limitfrom=0, $limitnum=0
+            WHERE cu.companyid IN({$companyid}) AND a.quiz=12 AND a.state='finished' AND u.suspended=0 AND u.deleted=0;",
+            array('companyid'=>$companyid)
         );
         return $Users;
     }

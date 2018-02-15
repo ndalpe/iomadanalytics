@@ -59,7 +59,7 @@ class GradesGraph extends \core\task\scheduled_task
 		foreach ($this->Companies as $key => $company) {
 			$notStarted = $this->reportUtils->getNotStartedCompany($company->id);
 			$started = $this->reportUtils->getStartedComapany(array($company->id));
-			$completed = $this->reportUtils->getCompletedCompany($company->id);
+			$completed = $this->reportUtils->getCompletedCompany(array($company->id));
 			$all = $notStarted+$started+$completed;
 
 			$data = new \stdClass();
