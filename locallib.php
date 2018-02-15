@@ -369,20 +369,6 @@ class report_iomadanalytics_utils {
         return $Users;
     }
 
-    public function getAttemps() {
-        $Quizs = $this->getQuiz();
-        foreach ($Quizs as $key => $quiz) {
-            $q[] = $quiz->id;
-        }
-        $whereQuiz = implode(',', $q);
-        unset($Quizs, $q);
-
-        $Attemps = $this->DB->get_records_sql(
-            'SELECT id,quiz,userid FROM mdl_quiz_attempts WHERE quiz IN ('.$whereQuiz.');', array(), $limitfrom=0, $limitnum=0
-        );
-        return $Attemps;
-    }
-
     public function getQuiz() {
         $Quiz = $this->DB->get_records_sql(
             'SELECT * FROM mdl_quiz WHERE id IN (2,3,4,5,6,7,8,9,10,11,12);',
