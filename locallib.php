@@ -361,14 +361,6 @@ class report_iomadanalytics_utils {
         return $Students;
     }
 
-    public function getUsersFromCountry($country) {
-        $Users = $this->DB->get_records_sql(
-            'SELECT id FROM mdl_user WHERE country=:country AND suspended=0 AND deleted=0;',
-            array('country'=>$country), $limitfrom=0, $limitnum=0
-        );
-        return $Users;
-    }
-
     public function getAvgPercentGrades($Grades)
     {
         $gradeCount = $i = 0;
