@@ -369,14 +369,6 @@ class report_iomadanalytics_utils {
         return $Users;
     }
 
-    public function getQuiz() {
-        $Quiz = $this->DB->get_records_sql(
-            'SELECT * FROM mdl_quiz WHERE id IN (2,3,4,5,6,7,8,9,10,11,12);',
-            array(), $limitfrom=0, $limitnum=0
-        );
-        return $Quiz;
-    }
-
     public function getAvgPercentGrades($Grades)
     {
         $gradeCount = $i = 0;
