@@ -142,7 +142,7 @@ class report_iomadanalytics_utils {
                 "SELECT userid as id
                 FROM mdl_company_users as cu
                 INNER JOIN mdl_user as u ON cu.userid = u.id
-                WHERE companyid=:company_id AND cu.suspended=0 AND u.suspended=0 AND u.deleted=0",
+                WHERE companyid=:company_id AND cu.suspended=0 AND u.suspended=0 AND u.suspended=0 AND u.deleted=0",
                 array('company_id' => $company_id)
             );
         } else {
@@ -211,53 +211,77 @@ class report_iomadanalytics_utils {
         return $c;
     }
 
+    /**
+     * Get the number of student who started the course but not finish the final test in a specific country
+     *
+     * string $company_id The country abbr (ie.: ID or MY or ...)
+    */
     public function getStarted($country) {
         $c = 0;
-        $Users = $this->DB->get_recordset('user', array('country'=>$country,'suspended'=>'0', 'deleted'=>'0'), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
+        $Users = $this->DB->get_recordset_sql("
+            SELECT
+                mdl_user.id AS userid,
+                MAX(mdl_quiz_attempts.quiz) AS quizid,
+                (SELECT state FROM mdl_quiz_attempts WHERE mdl_quiz_attempts.userid = mdl_user.id AND quiz = 12) AS state
+            FROM mdl_user
+            INNER JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
+            WHERE country=:country AND suspended = 0 AND deleted = 0
+            GROUP BY mdl_user.id;",
+            array('country'=>$country)
+        );
         foreach ($Users as $user) {
-            $Attemps = $this->DB->get_records_sql(
-                'SELECT id,quiz FROM mdl_quiz_attempts WHERE userid=:userid;',
-                array('userid'=>$user->id)
-            );
-            if (count($Attemps) !== 0) {
-                $started = true;
-                foreach ($Attemps as $attempt) {
-                    // reject the record if the user has an attemp for final test (quiz id 12)
-                    if ($attempt->quiz == 12) {
-                        $started = false;
-                    }
-                }
-                if ($started) {
-                    $c = $c + 1;
-                }
+            // student didn't get to final test
+            if ((int)$user->quizid < 12) {
+                $c += 1;
+            }
+
+            // student got to final test but didn't finished it
+            if ((int)$user->quizid == 12 && $user->state == 'inprogress') {
+                $c += 1;
             }
         }
         $Users->close();
         return $c;
     }
 
-    public function getStartedComapany($company_id) {
+    /**
+     * Get the number of student who started the course but not finish the final test in a specific company
+     *
+     * array $companies_id The array of company id
+    */
+    public function getStartedComapany($companies_id) {
+        // number of student who started the course
         $c = 0;
-        // $Users = $this->DB->get_recordset('user', array('country'=>$country,'suspended'=>'0', 'deleted'=>'0'), $sort='', $fields='*', $limitfrom=0, $limitnum=0);
-        $Users = $this->getStudentsInCompany($company_id);
+
+        // stringify the companies id
+        $companyid = implode(',', $companies_id);
+
+        $Users = $this->DB->get_recordset_sql("
+            SELECT
+                cu.userid AS userid,
+                MAX(qa.quiz) AS quizid,
+                (SELECT state FROM mdl_quiz_attempts WHERE mdl_quiz_attempts.userid = cu.userid AND quiz = 12) AS state
+            FROM mdl_company_users AS cu
+            INNER JOIN mdl_user AS u ON cu.userid = u.id
+            INNER JOIN mdl_quiz_attempts AS qa ON cu.userid = qa.userid
+            WHERE companyid IN ({$companyid}) AND cu.suspended=0 AND u.suspended=0 AND u.deleted=0
+            GROUP BY cu.userid;",
+            array()
+        );
+
         foreach ($Users as $user) {
-            $Attemps = $this->DB->get_records_sql(
-                'SELECT id,quiz FROM mdl_quiz_attempts WHERE userid=:userid;',
-                array('userid'=>$user->id)
-            );
-            if (count($Attemps) !== 0) {
-                $started = true;
-                foreach ($Attemps as $attempt) {
-                    // reject the record if the user has an attemp for final test (quiz id 12)
-                    if ($attempt->quiz == 12) {
-                        $started = false;
-                    }
-                }
-                if ($started) {
-                    $c = $c + 1;
-                }
+            // student didn't get to final test
+            if ((int)$user->quizid < 12) {
+                $c += 1;
+            }
+
+            // student got to final test but didn't finished it
+            if ((int)$user->quizid == 12 && $user->state == 'inprogress') {
+                $c += 1;
             }
         }
+
+        $Users->close();
         return $c;
     }
 
