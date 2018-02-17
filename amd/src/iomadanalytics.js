@@ -13,40 +13,12 @@ define(
                 // Holds the country abbr
                 // TODO: Ajax this
                 var countries = ['ID', 'MY'],
-                pluginPath = '/report/iomadanalytics/templates/',
+                // pluginPath = '/report/iomadanalytics/templates/',
                 gradesGraph = null,
                 ProgressChartId = '';
 
                 // Make the initial final grades graph of all companies without filter
                 refreshGradesGraph();
-
-                // Make the default progress graph of all companies
-                $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
-                    for (i in gData.companies) {
-                        ProgressChartId = 'chart-progress-'+gData.companies[i].id;
-
-                        $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
-
-                        new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
-                                type:'pie',
-                                data:gData.companies[i].graph,
-                                options:{
-                                    legend: false,
-                                    title: {text:gData.companies[i].company, display:true, position:'bottom'},
-                                    tooltips: {
-                                        enabled: true,
-                                        mode: 'single',
-                                        callbacks: {
-                                            label: function(tooltip, data) {
-                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        );
-                    }
-                });//progress graph
 
                 // Add listener to country's checkbox in the country selector
                 for (var i = 0; i < countries.length; i++) {
@@ -74,6 +46,7 @@ define(
 
                     // build param object
                     var params = JSON.stringify({companies:companies, filters:filters});
+                    console.log(params);
 
                     var promises = ajax.call(
                         [{methodname:'report_iomadanalytics_filters', args:{filters:params}}]
@@ -85,8 +58,13 @@ define(
                         // update graph details block
                         updateGraphDetails(filters, companies);
 
-                        // Make the graph with newly received data
-                        makeGradesGraph($.parseJSON(response));
+                        var graphsData = $.parseJSON(response);
+
+                        // Make the grades graph with newly received data
+                        makeGradesGraph(graphsData.grades);
+
+                        // Make the progress graph with newly received data
+                        makeProgressGraph(graphsData.progress);
 
                         // unfreeze controls
                         freezeControl(false);
@@ -99,6 +77,44 @@ define(
                         freezeControl(false);
                     });
 
+                }
+
+                function makeProgressGraph(progressGraphData) {
+                    // remove previously created pie chart
+                    Chart.helpers.each(Chart.instances, function(instance){
+                        var n = instance.chart.canvas.id;
+                        if (n.includes('chart-progress') === true) {
+                            instance.chart.destroy();
+                        }
+                    });
+
+                    // remove extra markup
+                    $("#progressGraph").html('');
+
+                    for (i in progressGraphData.datasets.companies) {
+                        ProgressChartId = 'chart-progress-'+progressGraphData.datasets.companies[i].id;
+
+                        $("#progressGraph").append('<div class="col-md-4"><canvas id="'+ProgressChartId+'"></canvas></div>');
+
+                        new Chart(document.getElementById(ProgressChartId).getContext("2d"), {
+                                type:'pie',
+                                data:progressGraphData.datasets.companies[i].graph,
+                                options:{
+                                    legend: false,
+                                    title: {text:progressGraphData.datasets.companies[i].company, display:true, position:'bottom'},
+                                    tooltips: {
+                                        enabled: true,
+                                        mode: 'single',
+                                        callbacks: {
+                                            label: function(tooltip, data) {
+                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        );
+                    }
                 }
 
                 /**

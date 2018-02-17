@@ -3,6 +3,7 @@ require_once("$CFG->libdir/externallib.php");
 
 require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
 require_once($CFG->dirroot . '/report/iomadanalytics/classes/GradesFilters.php');
+require_once($CFG->dirroot . '/report/iomadanalytics/classes/ProgressFilters.php');
 require_once($CFG->dirroot . '/report/iomadanalytics/classes/FlatFile.php');
 
 class report_iomadanalytics_external extends external_api {
@@ -40,12 +41,22 @@ class report_iomadanalytics_external extends external_api {
 
         $param = json_decode($filters);
 
-        $d = new GradesFilters();
-        $d->setFilter($param->filters[0]);
-        $d->setCompanies($param->companies);
-        $return = $d->getFiltersData();
+        // Contains the grades and profress data
+        $graphs = new stdClass();
 
-        return json_encode($return);
+        // Get grades data
+        $g = new GradesFilters();
+        $g->setFilter($param->filters[0]);
+        $g->setCompanies($param->companies);
+        $graphs->grades = $g->getFiltersData();
+
+        // Get progress data
+        $p = new ProgressFilters();
+        $p->setFilter($param->filters[0]);
+        $p->setCompanies($param->companies);
+        $graphs->progress = $p->getFiltersData();
+
+        return json_encode($graphs);
     }
 
     /**

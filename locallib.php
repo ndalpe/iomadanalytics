@@ -296,6 +296,60 @@ class report_iomadanalytics_utils {
     }
 
     /**
+     * Get the number of student who started the course but not finish the final test in a specific company
+     *
+     * array $companies_id The array of company id
+    */
+    public function getStartedFiltered($companies_id, $fieldid, $fieldValue) {
+        // number of student who started the course
+        $c = 0;
+
+        // stringify the companies id
+        $companyid = implode(',', $companies_id);
+
+        $f = new FlatFile();
+        $f->setFileName('ajax.txt');
+        $f->setObContent(array($fieldid, $fieldValue));
+        $f->writeToFile();
+
+        $Users = $this->DB->get_recordset_sql("
+            SELECT
+                cu.userid AS userid,
+                MAX(qa.quiz) AS quizid,
+                (SELECT state FROM mdl_quiz_attempts WHERE mdl_quiz_attempts.userid = cu.userid AND quiz = 12) AS state,
+                uid.fieldid AS field,
+                uid.data AS data
+            FROM mdl_company_users AS cu
+            INNER JOIN mdl_user AS u ON cu.userid = u.id
+            INNER JOIN mdl_quiz_attempts AS qa ON cu.userid = qa.userid
+            INNER JOIN mdl_user_info_data AS uid ON cu.userid = uid.userid
+            WHERE cu.companyid IN ({$companyid})
+                AND cu.suspended=0 AND u.suspended=0 AND u.deleted=0
+                AND uid.fieldid=:fieldid
+                AND uid.data='{$fieldValue}'
+            GROUP BY cu.userid;",
+            array(
+                'fieldid'=>$fieldid
+            )
+        );
+
+        foreach ($Users as $user) {
+            // student didn't get to final test
+            if ((int)$user->quizid < 12) {
+                $c += 1;
+            }
+
+            // student got to final test but didn't finished it
+            if ((int)$user->quizid == 12 && $user->state == 'inprogress') {
+                $c += 1;
+            }
+        }
+
+        $Users->close();
+        return $c;
+    }
+
+    /**
      * Get the number of student who completed the final test in a specific country
      *
      * string $company_id The country abbr (ie.: ID or MY or ...)
@@ -328,7 +382,32 @@ class report_iomadanalytics_utils {
         return $Users;
     }
 
-    public function getTotalCompletionTime($userid){
+    /**
+     * Get the number of student who completed the final test in a specific company
+     *
+     * array $companies_id The array of company id
+    */
+    public function getCompletedFiltered($companies_id, $fieldid, $fieldValue)
+    {
+        $companyid = implode(',', $companies_id);
+        $Users = $this->DB->count_records_sql("
+            SELECT count(u.id) AS total
+            FROM mdl_company_users AS cu
+            INNER JOIN mdl_quiz_attempts AS a ON cu.userid = a.userid
+            INNER JOIN mdl_user AS u ON cu.userid = u.id
+            INNER JOIN mdl_user_info_data as uid ON cu.userid = uid.userid
+            WHERE
+                cu.companyid IN({$companyid}) AND
+                a.quiz=12 AND a.state='finished' AND
+                u.suspended=0 AND u.deleted=0 AND
+                uid.fieldid=:fieldid AND uid.data='{$fieldValue}';",
+            array('companyid'=>$companyid, 'fieldid'=>$fieldid)
+        );
+        return $Users;
+    }
+
+    public function getTotalCompletionTime($userid)
+    {
         $strCroursesId = implode(',', $this->coursesId);
         $CompTime = $this->DB->get_records_sql("
             SELECT
