@@ -17,11 +17,8 @@ define(
                 gradesGraph = null,
                 ProgressChartId = '';
 
-                // Make the default final grades graph of all companies
-                $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
-                    updateGraphDetails($("#selectedFilter").val(), getSelectedCompanies());
-                    makeGradesGraph(gData);
-                });
+                // Make the initial final grades graph of all companies without filter
+                refreshGradesGraph();
 
                 // Make the default progress graph of all companies
                 $.getJSON(pluginPath+"graph_progress_all_companies.json", function(gData){
@@ -77,7 +74,7 @@ define(
 
                     // build param object
                     var params = JSON.stringify({companies:companies, filters:filters});
-console.log(params);
+
                     var promises = ajax.call(
                         [{methodname:'report_iomadanalytics_filters', args:{filters:params}}]
                     );
@@ -101,6 +98,7 @@ console.log(params);
                         // unfreeze controls
                         freezeControl(false);
                     });
+
                 }
 
                 /**
@@ -145,17 +143,10 @@ console.log(params);
 
                     templates.render(
                         'report_iomadanalytics/filter_selection_details',
-                        {
-                            filter: filterName,
-                            CompanyList: getSelectedCompanyName(companies)
-                        }
+                        {filter:filterName, CompanyList:getSelectedCompanyName(companies)}
                     )
-                    .then(function(html, js) {
-                        templates.replaceNodeContents('#filterSelectionDetails', html, js);
-                    })
-                    .fail(function(ex) {
-                        console.log(ex);
-                    });
+                    .then(function(html, js){templates.replaceNodeContents('#filterSelectionDetails', html, js);})
+                    .fail(function(ex){console.log(ex);});
                 }
 
                 /**
@@ -171,7 +162,7 @@ console.log(params);
                         // refresh grades graph with new country selection
                         refreshGradesGraph();
                     });
-                } // end toggleChekbox()
+                }
 
                 /**
                  * Disable the country selector and filters button
@@ -229,6 +220,9 @@ console.log(params);
                     return c.join(', ').toUpperCase();
                 }
 
+                /**
+                 * Return an array of selected companies
+                */
                 function getSelectedCompanies() {
                     // Get selected companies
                     var companies = [];
@@ -239,7 +233,6 @@ console.log(params);
                     });
                     return companies;
                 }
-
             }); // end document.ready
         } // end: init
     };
