@@ -27,14 +27,5 @@ $tasks = array(
 		'day' => '*',
 		'dayofweek' => '*',
 		'month' => '*'
-	),
-	// array(
-	// 	'classname' => 'report_iomadanalytics\task\FilterTabs',
-	// 	'blocking' => 0,
-	// 	'minute' => '0',
-	// 	'hour' => '3',
-	// 	'day' => '*',
-	// 	'dayofweek' => '1-5',
-	// 	'month' => '*'
-	// )
+	)
 );

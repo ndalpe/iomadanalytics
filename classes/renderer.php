@@ -60,25 +60,7 @@ class report_iomadanalytics implements renderable, templatable {
     public function companyList(renderer_base $output){
         return $this->data['CompanyList'];
     }
-
-    public function filterList(renderer_base $output){
-        return $this->data['FilterList'];
-    }
-
-    public function tabsList(renderer_base $output){
-        return $this->data['tabslist'];
-    }
-
-    public function checkboxList(renderer_base $output){
-        return $this->data['filterslist'];
-    }
-
-    public function tabPanList(renderer_base $output){
-        return $this->data['indTablist'];
-    }
 }
-
-//https://v4-alpha.getbootstrap.com/components/card/
 
 class report_iomadanalytics_renderer extends \plugin_renderer_base {
 
@@ -105,25 +87,5 @@ class report_iomadanalytics_renderer extends \plugin_renderer_base {
     public function render_companyList(report_iomadanalytics $widget) {
         $data['CompanyList'] = $widget->companyList($this);
         return parent::render_from_template('report_iomadanalytics/CompanyList', $data);
-    }
-
-    public function render_filterList(report_iomadanalytics $widget) {
-        $data['FilterList'] = $widget->filterList($this);
-        return parent::render_from_template('report_iomadanalytics/FilterList', $data);
-    }
-
-    public function render_tabsList(report_iomadanalytics $widget) {
-        $data['tabslist'] = $widget->tabsList($this);
-        return parent::render_from_template('report_iomadanalytics/filters_tabs', $data);
-    }
-
-    public function render_checkboxList(report_iomadanalytics $widget) {
-        $data['filterslist'] = $widget->checkboxList($this);
-        return parent::render_from_template('report_iomadanalytics/filters_tabs_content_checkbox', $data);
-    }
-
-    public function render_tabPanList(report_iomadanalytics $widget) {
-        $data['indTablist'] = $widget->tabPanList($this);
-        return parent::render_from_template('report_iomadanalytics/filters_tabs_content_tab', $data);
     }
 }
