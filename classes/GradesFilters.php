@@ -1,11 +1,4 @@
 <?php
-
-// namespace report_iomadanalytics\task;
-
-// require_once($CFG->libdir  . '/gradelib.php');
-// require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
-// require_once($CFG->dirroot . '/report/iomadanalytics/classes/FlatFile.php');
-
 class GradesFilters
 {
 	// contain utilities function to process the report (contained in the locallib)
@@ -26,7 +19,7 @@ class GradesFilters
 	// Custom Profile Field to exclude from filters
 	// 3  : nationality
 	// 11 : company : different country has different companies
-	public $FieldToExclude = '3,6,11';
+	public $FieldToExclude = '3,11';
 
 	// The current company id
 	public $currentComapnyId;
@@ -49,35 +42,7 @@ class GradesFilters
 		$this->Countries = $this->reportUtils->getCountries(false);
 		$this->Companies = $this->reportUtils->getCompanies();
 		$this->Courses = $this->reportUtils->getCourses();
-		// $this->report = new \report_iomadanalytics();
-		// $this->FlatFile = new \FlatFile();
-
-		// $content = $this->gradesPerCompanies();
-		// $this->FlatFile->setFileName('graphGradesAllCompany.json');
-		// $this->FlatFile->setFileContent($content);
-		// $this->FlatFile->writeToFile();
 	}
-
-	/*
-	public function gradesPerCompanies()
-	{
-		$comapnies = array();
-		foreach ($this->Companies as $company) {
-
-			// set the company id avalable to all method
-			$this->currentComapnyId = $company->id;
-
-			$comapnies[$company->shortname] = (object) array(
-				'id' => $company->id,
-				'shortname' => $company->shortname,
-				'name' => $company->name,
-				'filters' => $this->getFiltersData()
-			);
-		}
-
-		return json_encode($comapnies);
-	}
-	*/
 
 	/**
 	 * Set the filter's id (costom profile field) (mdl_user_info_field)
@@ -173,6 +138,9 @@ class GradesFilters
 		return $fieldDataset;
 	}
 
+	/**
+	 * Render grades graph when no filter are selected (ie.: on page load)
+	*/
 	public function fieldContentAll()
 	{
 		// Simple counter to pick a color in barGraphColors
