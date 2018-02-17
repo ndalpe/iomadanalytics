@@ -33,7 +33,7 @@ class report_iomadanalytics_external extends external_api {
         self::validate_context($context);
 
         //Capability checking
-        //OPTIONAL but in most web service it should present
+        //OPTIONAL but in most web service it should be present
         // if (!has_capability('moodle/user:viewdetails', $context)) {
         //     throw new moodle_exception('cannotviewprofile');
         // }

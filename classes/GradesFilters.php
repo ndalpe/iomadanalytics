@@ -79,6 +79,11 @@ class GradesFilters
 	}
 	*/
 
+	/**
+	 * Set the filter's id (costom profile field) (mdl_user_info_field)
+	 *
+	 * @param String $filter - The custom profile field ID
+	*/
 	public function setFilter($filter)
 	{
 		if (!empty($filter)) {
@@ -86,6 +91,11 @@ class GradesFilters
 		}
 	}
 
+	/**
+	 * Set the company/companies id
+	 *
+	 * @param Array $companies - The company ids
+	*/
 	public function setCompanies($companies)
 	{
 		if (is_array($companies)) {
@@ -93,11 +103,19 @@ class GradesFilters
 		}
 	}
 
+	/**
+	 * Get the costom profile field's data (mdl_user_info_field)
+	*/
 	public function getField()
 	{
 		return $this->DB->get_record('user_info_field', array('id'=>$this->filter));
 	}
 
+	/**
+	 * Return the company ids either as a csv string of ID or as an array
+	 *
+	 * @param String $format - Wheter the company ids should be returned as an Array or a csv
+	*/
 	public function getCompanies($format = 'string')
 	{
 		if ($format == 'string') {
