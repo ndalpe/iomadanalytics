@@ -1,7 +1,6 @@
 <?php
 namespace report_iomadanalytics\task;
 
-require_once($CFG->libdir  . '/gradelib.php');
 require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
 
 class GradesGraph extends \core\task\scheduled_task
