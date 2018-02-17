@@ -142,3 +142,6 @@ div.bhoechie-tab div.bhoechie-tab-content:not(.active){
 	padding-left: 15px;
 	padding-right: 15px;
 }
+.graphDetails {
+	padding-left: 3px;
+}

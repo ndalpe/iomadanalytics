@@ -15,20 +15,15 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template report_iomadanalytics/all_ctry_avg_block
+    @template report_iomadanalytics/report_iomadanalytics
 
-    Template which defines the average of each countries final test grade
+    Template which defines the overall report
 
     Classes required for JS:
     * none
 
     Data attributes required for JS:
     * none
-
-    Context variables required for this template:
-    * headings - string: block title
-    * keyMetric - string: average of all country
-  * countries - array: contains all the country name along with their final test average
 }}
 <div class="report_section">
   <div class="row">
@@ -110,6 +105,9 @@
     <div class="col-md-12">
       <h2>{{gradesGraph_block_title}}</h2>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12" id="filterSelectionDetails"></div>
   </div>
   <div class="row">
     <div class="col-md-12">

@@ -40,6 +40,8 @@ $string['filtersselector_tab_title'] = 'Filter grades by profile';
 $string['filtersselector_tab_help'] = 'The selected filter will only display grades of selected country and company.';
 
 $string['gradesGraph_block_title'] = 'Grades - All Courses';
+$string['gradesGraph_appplied_filter'] = 'Applied Filter';
+$string['gradesGraph_companies'] = 'Companies';
 $string['progressGraph_block_title'] = 'Progress';
 
 $string['AllCtryAvgBlock_title'] = 'Average Final Test Result';

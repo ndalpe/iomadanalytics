@@ -2,9 +2,10 @@ define(
     [
         'jquery',
         'core/ajax',
+        'core/templates',
         '/report/iomadanalytics/amd/src/Chart.min.js'
     ],
-    function($, ajax, Chart) {
+    function($, ajax, templates, Chart) {
     return {
         init: function() {
             $(document).ready(function() {
@@ -18,6 +19,7 @@ define(
 
                 // Make the default final grades graph of all companies
                 $.getJSON(pluginPath+"graph_grades_all_companies.json", function(gData){
+                    updateGraphDetails($("#selectedFilter").val(), getSelectedCompanies());
                     makeGradesGraph(gData);
                 });
 
@@ -67,13 +69,7 @@ define(
                     // Freeze all checkbox and button while the graph is being refreshed
                     freezeControl(true);
 
-                    // Get selected companies
-                    var companies = [];
-                    $(".country_company input").each(function(){
-                        if (this.checked) {
-                            companies.push($(this).attr('id'));
-                        }
-                    });
+                    var companies = getSelectedCompanies();
 
                     // get the selected filter
                     var filters = [];
@@ -81,13 +77,17 @@ define(
 
                     // build param object
                     var params = JSON.stringify({companies:companies, filters:filters});
-
+console.log(params);
                     var promises = ajax.call(
                         [{methodname:'report_iomadanalytics_filters', args:{filters:params}}]
                     );
 
                     promises[0]
                     .done(function(response) {
+
+                        // update graph details block
+                        updateGraphDetails(filters, companies);
+
                         // Make the graph with newly received data
                         makeGradesGraph($.parseJSON(response));
 
@@ -129,6 +129,33 @@ define(
                             }
                         }}
                     );
+                }
+
+                function updateGraphDetails(filters, companies) {
+
+                    // Define filter name
+                    // If no filter is selected, #selectedFilter is set to all
+                    // if a filter is selected, #selectedFilter is set to the filter's id
+                    var filterName = '';
+                    if ($("#selectedFilter").val() == 'all') {
+                        filterName = 'None';
+                    } else {
+                        filterName = $("<div>").html($("button[data-filterid='"+filters+"'").html()).text();
+                    }
+
+                    templates.render(
+                        'report_iomadanalytics/filter_selection_details',
+                        {
+                            filter: filterName,
+                            CompanyList: getSelectedCompanyName(companies)
+                        }
+                    )
+                    .then(function(html, js) {
+                        templates.replaceNodeContents('#filterSelectionDetails', html, js);
+                    })
+                    .fail(function(ex) {
+                        console.log(ex);
+                    });
                 }
 
                 /**
@@ -188,6 +215,30 @@ define(
                     $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
                     $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
                 });
+
+                /**
+                 * Return a csv string of selected companies' shortname
+                 * param: array companies - The array of selected companies
+                */
+                function getSelectedCompanyName(companies) {
+                    var c=[];
+                    $.each(companies, function(index) {
+                        c.push($("#"+companies[index]).val());
+                    });
+
+                    return c.join(', ').toUpperCase();
+                }
+
+                function getSelectedCompanies() {
+                    // Get selected companies
+                    var companies = [];
+                    $(".country_company input").each(function(){
+                        if (this.checked) {
+                            companies.push($(this).attr('id'));
+                        }
+                    });
+                    return companies;
+                }
 
             }); // end document.ready
         } // end: init

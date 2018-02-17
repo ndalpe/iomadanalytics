@@ -150,7 +150,12 @@ class GradesFilters
 
 	public function getFiltersData()
 	{
-		$Field = $this->getField();
+		if ($this->filter == 'all') {
+			$Field = new stdClass();
+			$Field->shortname = $this->filter;
+		} else {
+			$Field = $this->getField();
+		}
 
 		// Create method name to fetch field data
 		$filterFuncName = 'fieldContent'.ucfirst(strtolower($Field->shortname));
@@ -166,6 +171,50 @@ class GradesFilters
 		$fieldDataset->datasets = $datasets;
 
 		return $fieldDataset;
+	}
+
+	public function fieldContentAll()
+	{
+		// Simple counter to pick a color in barGraphColors
+		$colorIndex = 0;
+
+		// Contains the data sets
+		$dataAll = array();
+
+		$Companies = $this->DB->get_records_sql(
+		    'SELECT * FROM mdl_company WHERE id IN('.$this->getCompanies().') ORDER BY country ASC;', array()
+		);
+
+		foreach ($Companies as $company) {
+
+			foreach ($this->Courses as $course) {
+
+				// get all quiz for this course
+				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
+				foreach ($Quiz as $quiz) {
+					$d[] = $this->reportUtils->getAvgGrade($company->id, $quiz->id);
+				}
+			}
+			$data[] = (object) ['data' => $d];
+
+			// keep a copy of all grades for the combined graph
+			$allGrades['labels'] = $labels;
+			$dataAll[] = (object) [
+				'data' => $d,
+				'backgroundColor' => $this->reportUtils->getBarGraphColor($colorIndex, 3),
+				'borderColor' => $this->reportUtils->getBarGraphColor($colorIndex, 5),
+				'borderWidth' => 1,
+				'label' => $company->shortname,
+				'stack' => 'stak'.$company->shortname
+			];
+
+			// reset the graph per cohort data
+			unset($labels, $data, $d);
+
+			$colorIndex += 1;
+		}
+
+		return $dataAll;
 	}
 
 	/**

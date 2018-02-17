@@ -26,7 +26,7 @@ class GradesFilters extends \core\task\scheduled_task
 	// Custom Profile Field to exclude from filters
 	// 3  : nationality
 	// 11 : company : different country has different companies
-	public $FieldToExclude = '3,6,11';
+	public $FieldToExclude = '3,11';
 
 	// The current company id
 	public $currentComapnyId;
