@@ -94,23 +94,18 @@
     </div>
   </div>
 </form>
-</div><!-- /report_section -->
-
-<div class="report_section">
 
   {{!
     Graph Final Grades
   }}
-  <div class="row">
-    <div class="col-md-12">
-      <h2>{{gradesGraph_block_title}}</h2>
+  <div class="card card_style">
+    <div class="card-header">
+      <h4>{{gradesGraph_block_title}}</h4>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12" id="filterSelectionDetails"></div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
+    <div class="card-block">
+      <div class="filterSelectionDetails"></div>
+    </div>
+    <div class="card-block">
       <canvas id="chart-grades"></canvas>
     </div>
   </div>
@@ -118,13 +113,14 @@
   {{!
     Graph Progress
   }}
-  <div class="row">
-    <div class="col-md-12">
-      <h2>{{progressGraph_block_title}}</h2>
+  <div class="card card_style">
+    <div class="card-header">
+      <h4>{{progressGraph_block_title}}</h4>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
+    <div class="card-block">
+      <div class="filterSelectionDetails"></div>
+    </div>
+    <div class="card-block">
       <div class="row" id="progressGraph"></div>
     </div>
   </div>

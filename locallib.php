@@ -301,16 +301,16 @@ class report_iomadanalytics_utils {
      * array $companies_id The array of company id
     */
     public function getStartedFiltered($companies_id, $fieldid, $fieldValue) {
-        // number of student who started the course
-        $c = 0;
-
-        // stringify the companies id
+        // stringify the companies ids
         $companyid = implode(',', $companies_id);
 
-        $f = new FlatFile();
-        $f->setFileName('ajax.txt');
-        $f->setObContent(array($fieldid, $fieldValue));
-        $f->writeToFile();
+        if (is_array($fieldValue)) {
+            if ($fieldValue['type'] == 'MinMax') {
+                $whereData = "AND (uid.data>'".$fieldValue['max']."' AND uid.data<'".$fieldValue['min']."')";
+            }
+        } else {
+            $whereData = "AND uid.data='{$fieldValue}'";
+        }
 
         $Users = $this->DB->get_recordset_sql("
             SELECT
@@ -326,12 +326,15 @@ class report_iomadanalytics_utils {
             WHERE cu.companyid IN ({$companyid})
                 AND cu.suspended=0 AND u.suspended=0 AND u.deleted=0
                 AND uid.fieldid=:fieldid
-                AND uid.data='{$fieldValue}'
+                {$whereData}
             GROUP BY cu.userid;",
             array(
                 'fieldid'=>$fieldid
             )
         );
+
+        // number of student who started the course
+        $c = 0;
 
         foreach ($Users as $user) {
             // student didn't get to final test
@@ -390,6 +393,15 @@ class report_iomadanalytics_utils {
     public function getCompletedFiltered($companies_id, $fieldid, $fieldValue)
     {
         $companyid = implode(',', $companies_id);
+
+        if (is_array($fieldValue)) {
+            if ($fieldValue['type'] == 'MinMax') {
+                $whereData = "AND (uid.data>'".$fieldValue['max']."' AND uid.data<'".$fieldValue['min']."')";
+            }
+        } else {
+            $whereData = "AND uid.data='{$fieldValue}'";
+        }
+
         $Users = $this->DB->count_records_sql("
             SELECT count(u.id) AS total
             FROM mdl_company_users AS cu
@@ -400,7 +412,8 @@ class report_iomadanalytics_utils {
                 cu.companyid IN({$companyid}) AND
                 a.quiz=12 AND a.state='finished' AND
                 u.suspended=0 AND u.deleted=0 AND
-                uid.fieldid=:fieldid AND uid.data='{$fieldValue}';",
+                uid.fieldid=:fieldid
+                {$whereData};",
             array('companyid'=>$companyid, 'fieldid'=>$fieldid)
         );
         return $Users;

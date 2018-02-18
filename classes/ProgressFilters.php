@@ -233,7 +233,7 @@ class ProgressFilters
 	}
 
 	/**
-	 * Get grades from filter date of birth profile field
+	 * Get profile from filter date of birth profile field
 	 *
 	 * @param object $field The DOB custom profile field object
 	 * @return
@@ -243,6 +243,11 @@ class ProgressFilters
 	{
 		$companyids = $this->getCompanies('string');
 
+		// convert joindate timestamp into year
+		// id	userid	fieldid	joindate	joinyear	companyid	userid
+		// 168	22	    6	    870973200	1997	    3	        22
+		// 320	47	    6	    951325200	2000	    3	        47
+		// 9024	1129	6	    963853200	2000	    3	        1129
 		$Joindate = $this->DB->get_records_sql("
 			SELECT
 			mdl_user_info_data.id, mdl_user_info_data.userid, mdl_user_info_data.fieldid, mdl_user_info_data.data AS joindate, DATE_FORMAT(FROM_UNIXTIME(data), '%Y') AS joinyear,
@@ -335,74 +340,45 @@ class ProgressFilters
 			}
 		}
 
-		// get the average grade per age groups for all tests
 		foreach ($ageGroups as $key => $group) {
+			$where = array(
+				'type' => 'MinMax',
+				'min'  => $group['tsMin'],
+				'max'  => $group['tsMax']
+			);
+			$notStarted = $this->reportUtils->getNotStartedCompany($this->getCompanies('Array'));
+			$started    = $this->reportUtils->getStartedFiltered($this->getCompanies('Array'), $field->id, $where);
+			$completed  = $this->reportUtils->getCompletedFiltered($this->getCompanies('Array'), $field->id, $where);
+			$all = $notStarted+$started+$completed;
 
-			// get the grades of $Students
-			foreach ($this->Courses as $course) {
+			$data = new \stdClass();
+			$data->data = [
+				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
+				$this->reportUtils->getPercent($started,    $all, $precision=false),
+				$this->reportUtils->getPercent($completed,  $all, $precision=false)
+			];
+			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
-				// get all quiz for this course
-				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
-				foreach ($Quiz as $quiz) {
-					if ($group['ageCnt'] == 1) {
-						$Students = $this->DB->get_records_sql("
-							SELECT AVG(mdl_quiz_grades.grade) AS grades
-							FROM mdl_user_info_data
-							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
-							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
-							WHERE mdl_user_info_data.fieldid=6 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND data='".$group['tsMin']."'
-							GROUP BY mdl_quiz_grades.quiz",
-							array('quizid'=>$quiz->id)
-						);
-					} else {
-						$Students = $this->DB->get_records_sql("
-							SELECT AVG(mdl_quiz_grades.grade) AS grades
-							FROM mdl_user_info_data
-							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
-							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
-							WHERE mdl_user_info_data.fieldid=6 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND (data>'".$group['tsMax']."' AND data<'".$group['tsMin']."')
-							GROUP BY mdl_quiz_grades.quiz",
-							array('quizid'=>$quiz->id)
-						);
-					}
-					$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
-					$avgGrades = reset($Students);
-					$avgGrade = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
-					$ageGroups[$key]['avgGrade'][] = array(
-						'avgGrade' => $avgGrade,
-						'quiz' => $quiz->name
-					);
-				}
-			}
+			$datasets = array();
+			$datasets['datasets'][] = $data;
+			$datasets['labels'] = array(
+				get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
+			);
+
+			$graph = new \stdClass();
+			$graph->graph = $datasets;
+			$graph->company = $group['ageMin'].'-'.$group['ageMax'];
+			$graph->id = $key;
+
+			$graphs[] = $graph;
 		}
 
-		foreach ($ageGroups as $key => $group) {
-			$a = new \stdClass();
-			$a->label = $group['ageMin'].'-'.$group['ageMax'];
-			$a->stack = 'stack'.$group['ageMin'].$group['ageMax'];
-			$a->backgroundColor = $this->reportUtils->getBarGraphColor($key, 3);
-			$a->borderColor = $this->reportUtils->getBarGraphColor($key, 5);
-			$a->borderWidth = 1;
+		$allGraph = new \stdClass();
+		$allGraph->companies = $graphs;
 
-			if (isset($group['avgGrade'])) {
-				foreach ($group['avgGrade'] as $grade) {
-					$a->data[] = round($grade['avgGrade']);
-				}
-			} else {
-				// zero fill the array if no grades are found
-				// array array_fill ( int $start_index , int $num , mixed $value )
-				$a->data = array_fill(0, count($this->Courses), 0);
-			}
-			$datasets[] = $a;
-			unset($a);
-		}
-
-		// if company doesn't have any age group yet (no registered student)
-		if (!isset($datasets)) {
-			$datasets[] = false;
-		}
-
-		return $datasets;
+		return $allGraph;
 
 	}
 
@@ -491,73 +467,45 @@ class ProgressFilters
 			}
 		}
 
-		// get the average grade per age groups for all tests
 		foreach ($ageGroups as $key => $group) {
+			$where = array(
+				'type' => 'MinMax',
+				'min'  => $group['tsMin'],
+				'max'  => $group['tsMax']
+			);
+			$notStarted = $this->reportUtils->getNotStartedCompany($this->getCompanies('Array'));
+			$started    = $this->reportUtils->getStartedFiltered($this->getCompanies('Array'), $field->id, $where);
+			$completed  = $this->reportUtils->getCompletedFiltered($this->getCompanies('Array'), $field->id, $where);
+			$all = $notStarted+$started+$completed;
 
-			// get the grades of $Students
-			foreach ($this->Courses as $course) {
+			$data = new \stdClass();
+			$data->data = [
+				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
+				$this->reportUtils->getPercent($started,    $all, $precision=false),
+				$this->reportUtils->getPercent($completed,  $all, $precision=false)
+			];
+			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
-				// get all quiz for this course
-				$Quiz = $this->reportUtils->getQuizByCourse($course->id);
-				foreach ($Quiz as $quiz) {
-					if ($group['ageCnt'] == 1) {
-						$Students = $this->DB->get_records_sql("
-							SELECT AVG(mdl_quiz_grades.grade) AS grades
-							FROM mdl_user_info_data
-							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
-							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
-							WHERE mdl_user_info_data.fieldid=1 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND data='".$group['tsMin']."'
-							GROUP BY mdl_quiz_grades.quiz",
-							array('quizid'=>$quiz->id)
-						);
-					} else {
-						$Students = $this->DB->get_records_sql("
-							SELECT AVG(mdl_quiz_grades.grade) AS grades
-							FROM mdl_user_info_data
-							INNER JOIN mdl_company_users ON mdl_user_info_data.userid = mdl_company_users.userid
-							INNER JOIN mdl_quiz_grades ON mdl_user_info_data.userid = mdl_quiz_grades.userid
-							WHERE mdl_user_info_data.fieldid=1 AND mdl_company_users.companyid IN(".$companyids.") AND mdl_quiz_grades.quiz=:quizid AND (data>'".$group['tsMax']."' AND data<'".$group['tsMin']."')
-							GROUP BY mdl_quiz_grades.quiz",
-							array('quizid'=>$quiz->id)
-						);
-					}
-					$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
-					$avgGrades = reset($Students);
-					$avgGrade = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
-					$ageGroups[$key]['avgGrade'][] = array(
-						'avgGrade' => $avgGrade,
-						'quiz' => $quiz->name
-					);
-				}
-			}
+			$datasets = array();
+			$datasets['datasets'][] = $data;
+			$datasets['labels'] = array(
+				get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
+				get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
+			);
+
+			$graph = new \stdClass();
+			$graph->graph = $datasets;
+			$graph->company = $group['ageMin'].'-'.$group['ageMax'];
+			$graph->id = $key;
+
+			$graphs[] = $graph;
 		}
 
-		foreach ($ageGroups as $key => $group) {
-			$a = new \stdClass();
-			$a->label = $group['ageMin'].'-'.$group['ageMax'];
-			$a->stack = 'stack'.$group['ageMin'].$group['ageMax'];
-			$a->backgroundColor = $this->reportUtils->getBarGraphColor($key, 3);
-			$a->borderColor = $this->reportUtils->getBarGraphColor($key, 5);
-			$a->borderWidth = 1;
-			if (isset($group['avgGrade'])) {
-				foreach ($group['avgGrade'] as $grade) {
-					$a->data[] = round($grade['avgGrade']);
-				}
-			} else {
-				// zero fill the array if no grades are found
-				// array array_fill ( int $start_index , int $num , mixed $value )
-				$a->data = array_fill(0, count($this->Courses), 0);
-			}
-			$datasets[] = $a;
-			unset($a);
-		}
+		$allGraph = new \stdClass();
+		$allGraph->companies = $graphs;
 
-		// if company doesn't have any age group yet (no registered student)
-		if (!isset($datasets)) {
-			$datasets[] = false;
-		}
-
-		return $datasets;
+		return $allGraph;
 
 	} //fieldContentDob()
 }

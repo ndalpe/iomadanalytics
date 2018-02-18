@@ -46,7 +46,6 @@ define(
 
                     // build param object
                     var params = JSON.stringify({companies:companies, filters:filters});
-                    console.log(params);
 
                     var promises = ajax.call(
                         [{methodname:'report_iomadanalytics_filters', args:{filters:params}}]
@@ -161,8 +160,12 @@ define(
                         'report_iomadanalytics/filter_selection_details',
                         {filter:filterName, CompanyList:getSelectedCompanyName(companies)}
                     )
-                    .then(function(html, js){templates.replaceNodeContents('#filterSelectionDetails', html, js);})
-                    .fail(function(ex){console.log(ex);});
+                    .then(function(html, js){
+                        templates.replaceNodeContents('.filterSelectionDetails', html, js);
+                    })
+                    .fail(function(ex){
+                        console.log(ex);
+                    });
                 }
 
                 /**
