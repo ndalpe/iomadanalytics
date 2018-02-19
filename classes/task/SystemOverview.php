@@ -1,8 +1,8 @@
 <?php
 namespace report_iomadanalytics\task;
 
-require_once($CFG->libdir  . '/gradelib.php');
 require_once($CFG->dirroot . '/report/iomadanalytics/locallib.php');
+require_once($CFG->dirroot . '/report/iomadanalytics/classes/FlatFile.php');
 
 class SystemOverview extends \core\task\scheduled_task
 {
@@ -41,22 +41,106 @@ class SystemOverview extends \core\task\scheduled_task
 		$this->report = new \report_iomadanalytics();
 
 		// Average Fianl Test Result Block
-		$this->generateFile(
-			'allCtryAvgBlock_rendered.mustache',
-			$this->allCtryAvgBlock()
-		);
+		// $this->generateFile(
+		// 	'allCtryAvgBlock_rendered.mustache',
+		// 	$this->allCtryAvgBlock()
+		// );
 
 		// Average Progress Block
-		$this->generateFile(
-			'allCtryProgressBlock_rendered.mustache',
-			$this->allCtryProgressBlock()
-		);
+		// $this->generateFile(
+		// 	'allCtryProgressBlock_rendered.mustache',
+		// 	$this->allCtryProgressBlock()
+		// );
+
+		// Average Time Completion Block
+		// $this->generateFile(
+		// 	'allCtryTimeCompBlock_rendered.mustache',
+		// 	$this->allCtryTimeCompBlock()
+		// );
 
 		// Average Time Completion Block
 		$this->generateFile(
-			'allCtryTimeCompBlock_rendered.mustache',
-			$this->allCtryTimeCompBlock()
+			'allCtryProgressYearBlock.json',
+			$this->allCtryProgressYearBlock()
 		);
+	}
+
+	public function allCtryProgressYearBlock()
+	{
+		$notStartedData = $completedData = $months = array();
+		for ($i = 0; $i <= 11; $i++) {
+
+			// Get year and month of $i month in the past
+			$Ym = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
+
+			// Make a new date object with Ym
+		    $month = new \DateTime($Ym.'-01');
+
+		    // Get the last day of the month
+		    $lastDay = $month->format('Y-m-t');
+
+		    // Get the first day of the month
+		    $firstDay = $Ym.'-01';
+
+		    // Make the x axis labels
+		    $labels[] = $month->format('M Y');
+
+		    // Build the not started array
+		    $notStartedData[] = $this->DB->count_records_sql("
+		    	SELECT COUNT(mdl_user.id) AS userid
+		    	FROM mdl_user
+		    	LEFT JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
+		    	WHERE
+		    		timecreated < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
+		    		timecreated > UNIX_TIMESTAMP('{$firstDay} 00:00:00') AND
+		    		suspended = 0 AND deleted = 0 AND quiz IS NULL;",
+		    	array()
+		    );
+
+		    // Build the completed array
+		    $completedData[] = $this->DB->count_records_sql("
+		    	SELECT count(id) AS num
+		    	FROM mdl_quiz_attempts AS qa
+		    	WHERE
+		    		qa.quiz=12 AND
+		    		qa.state='finished' AND
+		    		qa.timefinish < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
+		    		qa.timefinish > UNIX_TIMESTAMP('{$firstDay} 00:00:00');",
+		    	array()
+			);
+		}
+
+		// Create the not started data object
+		$notStarted = new \stdClass();
+		$notStarted->data = array_reverse($notStartedData);
+		$notStarted->label = str_replace('&nbsp;', ' ', get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'));
+		$notStarted->backgroundColor = "#cc0000";
+		$notStarted->borderColor = "#cc0000";
+		$notStarted->fill = false;
+
+		// Create the completed data object
+		$completed = new \stdClass();
+		$completed->data = array_reverse($completedData);
+		$completed->label = get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics');
+		$completed->backgroundColor = "#33cc00";
+		$completed->borderColor = "#33cc00";
+		$completed->fill = false;
+
+		// Set the graph option - remove the graph's title
+		$options = new \stdClass();
+		$options->title = (object) array('display' => false);
+
+		$data = new \stdClass();
+		$data->labels = array_reverse($labels);
+		$data->datasets = array($notStarted, $completed);
+
+		$graph = new \stdClass();
+		$graph->type = 'line';
+		$graph->data = $data;
+		$graph->options = $options;
+
+		return json_encode($graph);
+
 	}
 
 	/**************************************************/

@@ -116,7 +116,7 @@ $report->setTplBlock($filtersListBlock);
 /******************************************/
 $uiText = new \stdClass();
 $uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
-$uiText->detailledgrades_block_title = get_string('detailledgrades_block_title', 'report_iomadanalytics');
+// $uiText->detailledgrades_block_title = get_string('detailledgrades_block_title', 'report_iomadanalytics');
 
 $uiText->countryselector_block_title = get_string('countryselector_block_title', 'report_iomadanalytics');
 $uiText->countryselector_tab_title = get_string('countryselector_tab_title', 'report_iomadanalytics');

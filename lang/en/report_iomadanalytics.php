@@ -52,3 +52,5 @@ $string['AllCtryProgressBlock_started'] = 'Started';
 $string['AllCtryProgressBlock_completed'] = 'Completed';
 
 $string['AllCtryTimeCompBlock_title'] = 'Average Time Completion';
+
+$string['AllCtryProgressYearBlock_title'] = 'Progress of the past 12 months';

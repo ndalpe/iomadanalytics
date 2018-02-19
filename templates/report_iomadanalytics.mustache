@@ -36,13 +36,23 @@
     {{> report_iomadanalytics/allCtryProgressBlock_rendered }}
     {{> report_iomadanalytics/allCtryTimeCompBlock_rendered }}
   </div>
+  <div class="card-deck">
+    <div class="card card_style">
+        <div class="card-block">
+            <h4 class="card-title text-center">{{# str }}AllCtryProgressYearBlock_title, report_iomadanalytics{{/ str }}</h4>
+        </div>
+        <div class="card-block">
+          <canvas id="chart-progressyear"></canvas>
+        </div>
+    </div>
+  </div>
 </div>
 
 <div class="report_section">
 <form class="">
   <div class="row">
     <div class="col-md-12">
-      <h2 class="section_title">{{detailledgrades_block_title}}</h2>
+      <h2 class="section_title">{{# str }}detailledgrades_block_title, report_iomadanalytics{{/ str }}</h2>
     </div>
   </div>
   <div class="row padLR15">
@@ -98,15 +108,17 @@
   {{!
     Graph Final Grades
   }}
-  <div class="card card_style">
-    <div class="card-header">
-      <h4>{{gradesGraph_block_title}}</h4>
-    </div>
-    <div class="card-block">
-      <div class="filterSelectionDetails"></div>
-    </div>
-    <div class="card-block">
-      <canvas id="chart-grades"></canvas>
+  <div class="marB15">
+    <div class="card card_style">
+      <div class="card-header">
+        <h4>{{gradesGraph_block_title}}</h4>
+      </div>
+      <div class="card-block">
+        <div class="filterSelectionDetails"></div>
+      </div>
+      <div class="card-block">
+        <canvas id="chart-grades"></canvas>
+      </div>
     </div>
   </div>
 

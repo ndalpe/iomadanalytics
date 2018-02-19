@@ -13,22 +13,23 @@ define(
                 // Holds the country abbr
                 // TODO: Ajax this
                 var countries = ['ID', 'MY'],
-                // pluginPath = '/report/iomadanalytics/templates/',
+                pluginPath = '/report/iomadanalytics/templates/',
                 gradesGraph = null,
                 ProgressChartId = '';
+
+                // Make the yearly progress graph
+                $.getJSON(pluginPath+"allCtryProgressYearBlock.json", function(gData){
+                    new Chart(document.getElementById("chart-progressyear").getContext("2d"), gData);
+                });
 
                 // Make the initial final grades graph of all companies without filter
                 refreshGradesGraph();
 
                 // Add listener to country's checkbox in the country selector
-                for (var i = 0; i < countries.length; i++) {
-                    toggleChekbox(countries[i]);
-                }
+                for (var i = 0; i < countries.length; i++) {toggleChekbox(countries[i]);}
 
                 // refresh the grades graph when a company checkbox is checked/unchecked
-                $(".country_company input").change(function(){
-                    refreshGradesGraph();
-                });
+                $(".country_company input").change(function(){refreshGradesGraph();});
 
                 /**
                  * Ajax a new dataset according active country and filter
@@ -82,7 +83,7 @@ define(
                     // remove previously created pie chart
                     Chart.helpers.each(Chart.instances, function(instance){
                         var n = instance.chart.canvas.id;
-                        if (n.includes('chart-progress') === true) {
+                        if (n.includes('chart-progress-') === true) {
                             instance.chart.destroy();
                         }
                     });
