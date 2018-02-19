@@ -22,6 +22,19 @@ class FlatFile
 		$this->content = $content;
 	}
 
+	static function writeObContent($content)
+	{
+		ob_start();
+		var_dump($content);
+		$c = ob_get_contents();
+		ob_end_clean();
+
+		global $CFG;
+		$myfile = fopen($CFG->dirroot."/report/iomadanalytics/templates/debug.log", "w+") or die("Unable to open file!");
+		fwrite($myfile, $c);
+		fclose($myfile);
+	}
+
 	public function setObContent($ob)
 	{
 		ob_start();
