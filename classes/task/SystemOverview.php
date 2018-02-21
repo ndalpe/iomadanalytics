@@ -129,6 +129,8 @@ class SystemOverview extends \core\task\scheduled_task
 		// Set the graph option - remove the graph's title
 		$options = new \stdClass();
 		$options->title = (object) array('display' => false);
+		$options->maintainAspectRatio = false;
+		$options->responsive = true;
 
 		$data = new \stdClass();
 		$data->labels = array_reverse($labels);
