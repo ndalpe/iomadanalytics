@@ -92,7 +92,7 @@ class SystemOverview extends \core\task\scheduled_task
 		    	LEFT JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
 		    	WHERE
 		    		timecreated < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
-		    		timecreated > UNIX_TIMESTAMP('{$firstDay} 00:00:00') AND
+		    		#timecreated > UNIX_TIMESTAMP('{$firstDay} 00:00:00') AND
 		    		suspended = 0 AND deleted = 0 AND quiz IS NULL;",
 		    	array()
 		    );
@@ -104,8 +104,8 @@ class SystemOverview extends \core\task\scheduled_task
 		    	WHERE
 		    		qa.quiz=12 AND
 		    		qa.state='finished' AND
-		    		qa.timefinish < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
-		    		qa.timefinish > UNIX_TIMESTAMP('{$firstDay} 00:00:00');",
+		    		qa.timefinish < UNIX_TIMESTAMP('{$lastDay} 23:59:59')
+		    		#AND qa.timefinish > UNIX_TIMESTAMP('{$firstDay} 00:00:00');",
 		    	array()
 			);
 		}
@@ -129,8 +129,9 @@ class SystemOverview extends \core\task\scheduled_task
 		// Set the graph option - remove the graph's title
 		$options = new \stdClass();
 		$options->title = (object) array('display' => false);
-		$options->maintainAspectRatio = false;
-		$options->responsive = true;
+		// $options->maintainAspectRatio = false;
+		// $options->responsive = true;
+		// $options->animation = false;
 
 		$data = new \stdClass();
 		$data->labels = array_reverse($labels);
