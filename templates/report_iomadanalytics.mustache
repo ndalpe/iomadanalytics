@@ -28,7 +28,7 @@
 <div class="report_section">
   <div class="row">
     <div class="col-md-12">
-      <h2 class="section_title">{{systemoverview_block_title}}</h2>
+      <h2 class="section_title">{{# str }}systemoverview_block_title, report_iomadanalytics{{/ str }}</h2>
     </div>
   </div>
   <div class="card-deck">
@@ -60,18 +60,18 @@
       <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 bhoechie-tab-menu">
         <div class="list-group">
           <a href="#" class="list-group-item active text-center">
-            <h4 class="fa fa-map fa-2x"></h4><br/>{{countryselector_block_title}}
+            <h4 class="fa fa-map fa-2x"></h4><br/>{{# str }}countryselector_block_title, report_iomadanalytics{{/ str }}
           </a>
           <a href="#" class="list-group-item text-center">
-            <h4 class="fa fa-user fa-2x"></h4><br/>{{filtersselector_block_title}}
+            <h4 class="fa fa-user fa-2x"></h4><br/>{{# str }}filtersselector_block_title, report_iomadanalytics{{/ str }}
           </a>
         </div>
       </div>
       <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 bhoechie-tab">
         <!-- countries section -->
         <div id="countries_tab" class="bhoechie-tab-content active">
-          <h4>{{countryselector_tab_title}}</h4>
-          <p class="text-muted"><i class="fa fa-info"></i> {{countryselector_tab_help}}</p>
+          <h4>{{# str }}countryselector_tab_title, report_iomadanalytics{{/ str }}</h4>
+          <p class="text-muted"><i class="fa fa-info"></i> {{# str }}countryselector_tab_help, report_iomadanalytics{{/ str }}</p>
           <div class="row">
           {{# CntryList}}
           <div class="col-md-6">
@@ -94,8 +94,8 @@
         <!-- profile section -->
         <div id="filters_tab" class="bhoechie-tab-content">
           <input type="hidden" name="selectedFilter" id="selectedFilter" value="all" />
-          <h4>{{filtersselector_tab_title}}</h4>
-          <p class="text-muted"><i class="fa fa-info"></i> {{filtersselector_tab_help}}</p>
+          <h4>{{# str }}filtersselector_tab_title, report_iomadanalytics{{/ str }}</h4>
+          <p class="text-muted"><i class="fa fa-info"></i> {{# str }}filtersselector_tab_help, report_iomadanalytics{{/ str }}</p>
           {{# FilterList}}
           <button type="button" id="{{shortname}}" data-filterid="{{id}}" class="btn btn-primary">{{name}}</button>
           {{/ FilterList}}
@@ -111,7 +111,7 @@
   <div class="marB15">
     <div class="card card_style">
       <div class="card-header">
-        <h4>{{gradesGraph_block_title}}</h4>
+        <h4>{{# str }}gradesGraph_block_title, report_iomadanalytics{{/ str }}</h4>
       </div>
       <div class="card-block">
         <div class="filterSelectionDetails"></div>
@@ -127,7 +127,7 @@
   }}
   <div class="card card_style">
     <div class="card-header">
-      <h4>{{progressGraph_block_title}}</h4>
+      <h4>{{# str }}progressGraph_block_title, report_iomadanalytics{{/ str }}</h4>
     </div>
     <div class="card-block">
       <div class="filterSelectionDetails"></div>

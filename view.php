@@ -112,26 +112,6 @@ $filtersListBlock->data = $filtersList;
 $report->setTplBlock($filtersListBlock);
 
 /******************************************/
-/************** Set UI text ***************/
-/******************************************/
-$uiText = new \stdClass();
-$uiText->systemoverview_block_title = get_string('systemoverview_block_title', 'report_iomadanalytics');
-// $uiText->detailledgrades_block_title = get_string('detailledgrades_block_title', 'report_iomadanalytics');
-
-$uiText->countryselector_block_title = get_string('countryselector_block_title', 'report_iomadanalytics');
-$uiText->countryselector_tab_title = get_string('countryselector_tab_title', 'report_iomadanalytics');
-$uiText->countryselector_tab_help = get_string('countryselector_tab_help', 'report_iomadanalytics');
-
-$uiText->filtersselector_block_title = get_string('filtersselector_block_title', 'report_iomadanalytics');
-$uiText->filtersselector_tab_title = get_string('filtersselector_tab_title', 'report_iomadanalytics');
-$uiText->filtersselector_tab_help = get_string('filtersselector_tab_help', 'report_iomadanalytics');
-
-$uiText->gradesGraph_block_title = get_string('gradesGraph_block_title', 'report_iomadanalytics');
-$uiText->progressGraph_block_title = get_string('progressGraph_block_title', 'report_iomadanalytics');
-$report->setTplVars($uiText);
-
-
-/******************************************/
 /************** Output Page ***************/
 /******************************************/
 echo $output->header();
