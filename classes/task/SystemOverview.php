@@ -41,22 +41,22 @@ class SystemOverview extends \core\task\scheduled_task
 		$this->report = new \report_iomadanalytics();
 
 		// Average Fianl Test Result Block
-		// $this->generateFile(
-		// 	'allCtryAvgBlock_rendered.mustache',
-		// 	$this->allCtryAvgBlock()
-		// );
+		$this->generateFile(
+			'allCtryAvgBlock_rendered.mustache',
+			$this->allCtryAvgBlock()
+		);
 
 		// Average Progress Block
-		// $this->generateFile(
-		// 	'allCtryProgressBlock_rendered.mustache',
-		// 	$this->allCtryProgressBlock()
-		// );
+		$this->generateFile(
+			'allCtryProgressBlock_rendered.mustache',
+			$this->allCtryProgressBlock()
+		);
 
 		// Average Time Completion Block
-		// $this->generateFile(
-		// 	'allCtryTimeCompBlock_rendered.mustache',
-		// 	$this->allCtryTimeCompBlock()
-		// );
+		$this->generateFile(
+			'allCtryTimeCompBlock_rendered.mustache',
+			$this->allCtryTimeCompBlock()
+		);
 
 		// Average Time Completion Block
 		$this->generateFile(
@@ -129,9 +129,6 @@ class SystemOverview extends \core\task\scheduled_task
 		// Set the graph option - remove the graph's title
 		$options = new \stdClass();
 		$options->title = (object) array('display' => false);
-		// $options->maintainAspectRatio = false;
-		// $options->responsive = true;
-		// $options->animation = false;
 
 		$data = new \stdClass();
 		$data->labels = array_reverse($labels);
@@ -180,7 +177,6 @@ class SystemOverview extends \core\task\scheduled_task
 
 		// All country final test avg bock data
 		$allCtryBlockData = array();
-		$allCtryBlockData['header'] = get_string('AllCtryAvgBlock_title', 'report_iomadanalytics');
 		$allCtryBlockData['keyMetric'] = $allCtryAvg;
 		$allCtryBlockData['countries'] = $countryFinalTestAvg;
 
@@ -234,7 +230,6 @@ class SystemOverview extends \core\task\scheduled_task
 
 		// All country final test avg bock data
 		$allCtryBlockData = array();
-		$allCtryBlockData['header'] = get_string('AllCtryProgressBlock_title', 'report_iomadanalytics');
 		$allCtryBlockData['keyMetric'] = $keyMetric;
 		$allCtryBlockData['countries'] = $allCtryProgressData;
 
@@ -283,7 +278,6 @@ class SystemOverview extends \core\task\scheduled_task
 
 		// All country final test avg bock data
 		$allCtryTimeBlockData = array();
-		$allCtryTimeBlockData['header'] = get_string('AllCtryTimeCompBlock_title', 'report_iomadanalytics');
 		$allCtryTimeBlockData['keyMetric'] = $this->reportUtils->getTimeFromSec(($allTime/$allStudents));
 		$allCtryTimeBlockData['countries'] = $allCtryTimeData;
 
