@@ -17,10 +17,10 @@
 /**
  * Lang strings.
  *
- * Language strings used by report_loglive
+ * Language strings used by report_iomadanalytics
  *
- * @package    report_loglive
- * @copyright  2011 Petr Skoda
+ * @package    report_iomadanalytics
+ * @copyright  2018 Bridgeus
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -54,3 +54,7 @@ $string['AllCtryProgressBlock_completed'] = 'Completed';
 $string['AllCtryTimeCompBlock_title'] = 'Average Time Completion';
 
 $string['AllCtryProgressYearBlock_title'] = 'Progress of the past 12 months';
+
+$string['report_iomadanalytics:view_stats_company'] = 'View statistic of your own company';
+$string['report_iomadanalytics:view_stats_country'] = 'View statistic of your own country';
+$string['report_iomadanalytics:view_stats_all']     = 'View all statistics';

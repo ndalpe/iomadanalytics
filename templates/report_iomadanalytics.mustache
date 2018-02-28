@@ -25,6 +25,12 @@
     Data attributes required for JS:
     * none
 }}
+
+{{!
+  Block System Overview
+  Only show the system overview if view_stats_all is not false
+}}
+{{# view_stats_all }}
 <div class="report_section">
   <div class="row">
     <div class="col-md-12">
@@ -47,14 +53,18 @@
     </div>
   </div>
 </div>
+{{/ view_stats_all }}
+{{! End Block System Overview }}
 
 <div class="report_section">
 <form class="">
+{{# view_stats_all }}
   <div class="row">
     <div class="col-md-12">
       <h2 class="section_title">{{# str }}detailledgrades_block_title, report_iomadanalytics{{/ str }}</h2>
     </div>
   </div>
+  {{/ view_stats_all }}
   <div class="row padLR15">
     <div class="col-lg-12 col-md-12 col-sm-8 col-xs-9 card_style bhoechie-tab-container">
       <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 bhoechie-tab-menu">
@@ -78,7 +88,7 @@
             <div class="country">
               <div class="form-check">
                   <label class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" checked="checked" value="{{country_abbr}}" id="{{country_abbr}}">
+                    <input class="custom-control-input" {{# freezeCountrySelBlock }}disabled="disabled"{{/ freezeCountrySelBlock}} type="checkbox" checked="checked" value="{{country_abbr}}" id="{{country_abbr}}">
                     <span class="custom-control-indicator"></span>
                     <span class="custom-control-description">{{country_name}}</span>
                   </label>

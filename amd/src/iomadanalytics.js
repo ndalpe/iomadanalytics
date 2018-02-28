@@ -15,12 +15,15 @@ define(
                 var countries = ['ID', 'MY'],
                 pluginPath = '/report/iomadanalytics/templates/',
                 gradesGraph = null,
-                ProgressChartId = '';
+                ProgressChartId = '',
+                body = $("body");
 
                 // Make the yearly progress graph
-                $.getJSON(pluginPath+"allCtryProgressYearBlock.json", function(gData){
-                    new Chart(document.getElementById("chart-progressyear").getContext("2d"), gData);
-                });
+                if (body.hasClass('view_stats_all')) {
+                    $.getJSON(pluginPath+"allCtryProgressYearBlock.json", function(gData){
+                        new Chart(document.getElementById("chart-progressyear").getContext("2d"), gData);
+                    });
+                }
 
                 // Make the initial final grades graph of all companies without filter
                 refreshGradesGraph();
@@ -189,8 +192,16 @@ define(
                  * param: state bool - whether the input should be disable or not
                 */
                 function freezeControl(state) {
-                    // freeze countries checkbox and filters button
-                    $(".country_company input, .country input, #filters_tab button").attr('disabled', state);
+                    // Do not unfreeze the controls if there is only one company
+                    // otherwise it would be possible to refresh the graphs with no company ID
+                    if (body.hasClass('view_stats_company') === true) {
+                        $(".country_company input, .country input").attr('disabled', true);
+                    } else {
+                        $(".country_company input, .country input").attr('disabled', state);
+                    }
+
+                    // filters button
+                    $("#filters_tab button").attr('disabled', state);
                 }
 
                 /**
