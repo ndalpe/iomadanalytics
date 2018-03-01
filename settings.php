@@ -6,7 +6,7 @@ $ADMIN->add(
 	new admin_externalpage(
 		'reportiomadanalytics',
 		get_string('navigation_menu_name', 'report_iomadanalytics'),
-		"/report/iomadanalytics/view.php",
+		$CFG->wwwroot . "/report/iomadanalytics/view.php",
 		'moodle/site:viewreports'
 	)
 );
