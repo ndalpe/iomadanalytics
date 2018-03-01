@@ -35,7 +35,7 @@ $view_company = has_capability('mod/report_iomadanalytics:view_stats_company', $
 $view_country = has_capability('mod/report_iomadanalytics:view_stats_country', $systemcontext);
 $view_all     = has_capability('mod/report_iomadanalytics:view_stats_all',     $systemcontext);
 
-$PAGE->set_url('/report/iomadanalytics/view.php');
+$PAGE->set_url('/report/iomadanalytics/index.php');
 
 $PAGE->set_context($systemcontext);
 
