@@ -25,6 +25,7 @@
  */
 
 $string['pluginname'] = 'report_iomadanalytics';
+$string['navigation_menu_name'] = 'Student Progress Report';
 
 $string['report_page_title'] = 'Kansai Paint Progress Report';
 
