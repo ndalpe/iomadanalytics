@@ -1,13 +1,13 @@
 /* remove white bg color */
-#page-report-iomadanalytics-view #region-main-box #region-main {
+#page-report-iomadanalytics-index #region-main-box #region-main {
 	padding: 0;
 }
-#page-report-iomadanalytics-view #region-main-box #region-main,
-#page-report-iomadanalytics-view #region-main-box #region-main > .card {
+#page-report-iomadanalytics-index #region-main-box #region-main,
+#page-report-iomadanalytics-index #region-main-box #region-main > .card {
 	background-color: transparent;
 }
-#page-report-iomadanalytics-view #region-main-box #region-main,
-#page-report-iomadanalytics-view #region-main-box #region-main > .card {
+#page-report-iomadanalytics-index #region-main-box #region-main,
+#page-report-iomadanalytics-index #region-main-box #region-main > .card {
 	border: none;
 	box-shadow: none;
 }
