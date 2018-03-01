@@ -192,11 +192,23 @@ define(
                  * param: state bool - whether the input should be disable or not
                 */
                 function freezeControl(state) {
+                    // Company Admin
                     // Do not unfreeze the controls if there is only one company
                     // otherwise it would be possible to refresh the graphs with no company ID
                     if (body.hasClass('view_stats_company') === true) {
                         $(".country_company input, .country input").attr('disabled', true);
-                    } else {
+                    }
+
+                    // Country Admin
+                    // Do not allow unselect all company by unchecking the country checkbox
+                    if (body.hasClass('view_stats_country') === true) {
+                        $(".country input").attr('disabled', true);
+                        $(".country_company input").attr('disabled', state);
+                    }
+
+                    // Almighty
+                    // Check/Uncheck everything
+                    if (body.hasClass('view_stats_all') === true) {
                         $(".country_company input, .country input").attr('disabled', state);
                     }
 
