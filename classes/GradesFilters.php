@@ -106,7 +106,8 @@ class GradesFilters
 			// get all quiz for this course
 			$Quiz = $this->reportUtils->getQuizByCourse($course->id);
 			foreach ($Quiz as $quiz) {
-				$labels[] = $quiz->name;
+				// format multilanguage quiz name
+				$labels[] = format_string($quiz->name, true, 1);
 			}
 		}
 
