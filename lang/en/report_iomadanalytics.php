@@ -27,6 +27,9 @@
 $string['pluginname'] = 'report_iomadanalytics';
 $string['navigation_menu_name'] = 'Student Progress Report';
 
+$string['iomad_dashboard_report_tab_name'] = 'Report';
+$string['iomad_dashboard_progress_report'] = 'Progress Report';
+
 $string['report_page_title'] = 'Kansai Paint Progress Report';
 
 $string['systemoverview_block_title'] = 'System Overview (All countries)';
