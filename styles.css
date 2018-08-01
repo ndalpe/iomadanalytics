@@ -151,3 +151,12 @@ div.bhoechie-tab div.bhoechie-tab-content:not(.active){
 .graphDetails {
 	padding-left: 3px;
 }
+/** Make the "Remove Filter" button red **/
+button[data-filterid="all"] {
+	background-color: #d11111;
+	border-color: #d11111;
+}
+button[data-filterid="all"]:hover {
+	background-color: #a20d0d;
+	border-color: #a20d0d;
+}
