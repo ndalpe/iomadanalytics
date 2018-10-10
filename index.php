@@ -51,8 +51,10 @@ $PAGE->requires->js_call_amd('report_iomadanalytics/iomadanalytics', 'init');
 // Get custom renderer
 $output = $PAGE->get_renderer('report_iomadanalytics');
 
-// report Utilities
+// Define custom renderer
 $report = new report_iomadanalytics();
+
+// report Utilities
 $reportUtils = new report_iomadanalytics_utils();
 
 /*************************************************/

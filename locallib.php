@@ -99,6 +99,10 @@ class report_iomadanalytics_utils {
         return $Companies;
     }
 
+    /**
+     * Get a list of all courses specified in $this->courseId property
+     *
+    */
     public function getCourses()
     {
         $coursesId = implode(',', $this->coursesId);
@@ -106,12 +110,16 @@ class report_iomadanalytics_utils {
         return $courses;
     }
 
+    /**
+     * Get a list of all quiz for a specified course
+     *
+     * int $courseid the course id to retrieve the quiz from
+    */
     public function getQuizByCourse($courseid)
     {
         $quizs = $this->DB->get_records_sql("SELECT id, name FROM mdl_quiz WHERE course = :courseid", array('courseid'=>$courseid), $limitfrom=0, $limitnum=0);
         return $quizs;
     }
-
 
     /**
      * Get a list of all companies in a given country
