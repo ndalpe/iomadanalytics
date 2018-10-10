@@ -74,39 +74,39 @@ class SystemOverview extends \core\task\scheduled_task
 			$Ym = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
 
 			// Make a new date object with Ym
-		    $month = new \DateTime($Ym.'-01');
+			$month = new \DateTime($Ym.'-01');
 
-		    // Get the last day of the month
-		    $lastDay = $month->format('Y-m-t');
+			// Get the last day of the month
+			$lastDay = $month->format('Y-m-t');
 
-		    // Get the first day of the month
-		    $firstDay = $Ym.'-01';
+			// Get the first day of the month
+			$firstDay = $Ym.'-01';
 
-		    // Make the x axis labels
-		    $labels[] = $month->format('M Y');
+			// Make the x axis labels
+			$labels[] = $month->format('M Y');
 
-		    // Build the not started array
-		    $notStartedData[] = $this->DB->count_records_sql("
-		    	SELECT COUNT(mdl_user.id) AS userid
-		    	FROM mdl_user
-		    	LEFT JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
-		    	WHERE
-		    		timecreated < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
-		    		#timecreated > UNIX_TIMESTAMP('{$firstDay} 00:00:00') AND
-		    		suspended = 0 AND deleted = 0 AND quiz IS NULL;",
-		    	array()
-		    );
+			// Build the not started array
+			$notStartedData[] = $this->DB->count_records_sql("
+				SELECT COUNT(mdl_user.id) AS userid
+				FROM mdl_user
+				LEFT JOIN mdl_quiz_attempts ON mdl_user.id = mdl_quiz_attempts.userid
+				WHERE
+					timecreated < UNIX_TIMESTAMP('{$lastDay} 23:59:59') AND
+					#timecreated > UNIX_TIMESTAMP('{$firstDay} 00:00:00') AND
+					suspended = 0 AND deleted = 0 AND quiz IS NULL;",
+				array()
+			);
 
-		    // Build the completed array
-		    $completedData[] = $this->DB->count_records_sql("
-		    	SELECT count(id) AS num
-		    	FROM mdl_quiz_attempts AS qa
-		    	WHERE
-		    		qa.quiz=12 AND
-		    		qa.state='finished' AND
-		    		qa.timefinish < UNIX_TIMESTAMP('{$lastDay} 23:59:59')
-		    		#AND qa.timefinish > UNIX_TIMESTAMP('{$firstDay} 00:00:00');",
-		    	array()
+			// Build the completed array
+			$completedData[] = $this->DB->count_records_sql("
+				SELECT count(id) AS num
+				FROM mdl_quiz_attempts AS qa
+				WHERE
+					qa.quiz=12 AND
+					qa.state='finished' AND
+					qa.timefinish < UNIX_TIMESTAMP('{$lastDay} 23:59:59')
+					#AND qa.timefinish > UNIX_TIMESTAMP('{$firstDay} 00:00:00');",
+				array()
 			);
 		}
 
