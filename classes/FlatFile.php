@@ -29,6 +29,10 @@ class FlatFile
 
 	public function getFilePath()
 	{
+		if (!isset($CFG)) {
+			global $CFG;
+		}
+
 		if (empty($this->path)) {
 			return $CFG->dirroot.'/report/iomadanalytics/templates/';
 		} else {
