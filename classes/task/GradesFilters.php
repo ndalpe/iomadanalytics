@@ -1,5 +1,4 @@
 <?php
-
 namespace report_iomadanalytics\task;
 
 require_once($CFG->libdir  . '/gradelib.php');
@@ -234,13 +233,16 @@ class GradesFilters extends \core\task\scheduled_task
 							array('companyid'=>$this->currentComapnyId, 'quizid'=>$quiz->id)
 						);
 					}
-					$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
-					$avgGrades = reset($Students);
-					$avgGrade = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
-					$ageGroups[$key]['avgGrade'][] = array(
-						'avgGrade' => $avgGrade,
-						'quiz' => $quiz->name
-					);
+
+					if (count($Students) != 0){
+						$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
+						$avgGrades = reset($Students);
+						$avgGrade  = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
+						$ageGroups[$key]['avgGrade'][] = array(
+							'avgGrade' => $avgGrade,
+							'quiz' => $quiz->name
+						);
+					}
 				}
 			}
 		}
