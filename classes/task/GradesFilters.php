@@ -234,7 +234,9 @@ class GradesFilters extends \core\task\scheduled_task
 						);
 					}
 
-					if (count($Students) != 0){
+					// Do not add the field value if no student has passed the test yet
+					// If no student has passed the test for his age group or department
+					if (count($Students) != 0) {
 						$sumGrades = $this->DB->get_record('quiz', array('id'=>$quiz->id), $fields='sumgrades');
 						$avgGrades = reset($Students);
 						$avgGrade  = ($avgGrades->grades / $sumGrades->sumgrades) * 100;
