@@ -242,25 +242,38 @@ class GradesFilters
 		$colorKey = 0;
 		foreach ($fieldValues as $key => $value) {
 
-			$a = new \stdClass();
-			$a->label = $value['data'];
-			$a->stack = strtolower('stack'.preg_replace("/[^a-z]/i", "", $value['data']));
-			$a->backgroundColor = $this->reportUtils->getBarGraphColor($colorKey, 3);
-			$a->borderColor = $this->reportUtils->getBarGraphColor($colorKey, 5);
-			$a->borderWidth = 1;
+			// do not use the value if:
+			// The value is empty (line break in a dropdown menu)
+			// === Indonesia & === Malaysia are country separator in department
+			if (!empty($value['data']) && $value['data']!='=== Indonesia' && $value['data']!='=== Malaysia') {
+				$a = new \stdClass();
+				$a->label = $value['data'];
+				$a->stack = strtolower('stack'.preg_replace("/[^a-z]/i", "", $value['data']));
+				$a->backgroundColor = $this->reportUtils->getBarGraphColor($colorKey, 3);
+				$a->borderColor     = $this->reportUtils->getBarGraphColor($colorKey, 5);
+				$a->borderWidth     = 1;
 
-			if (isset($value['avgGrade'])) {
-				foreach ($value['avgGrade'] as $grade) {
-					$a->data[] = round($grade['avgGrade']);
+				if (isset($value['avgGrade'])) {
+					foreach ($value['avgGrade'] as $grade) {
+						$a->data[] = round($grade['avgGrade']);
+					}
+
+					// Add a zero to the days that contains no grades
+					// This is to prevent bars in the graph be bigger than they should
+					if (count($a->data) < 10) {
+						for ($i=count($a->data); $i < count($this->Courses); $i++) {
+							$a->data[] = 0;
+						}
+					}
+				} else {
+					// zero fill the array if no grades are found
+					// array array_fill ( int $start_index , int $num , mixed $value )
+					$a->data = array_fill(0, count($this->Courses), 0);
 				}
-			} else {
-				// zero fill the array if no grades are found
-				// array array_fill ( int $start_index , int $num , mixed $value )
-				$a->data = array_fill(0, count($this->Courses), 0);
+				$datasets[] = $a;
+				unset($a);
+				$colorKey = $colorKey + 1;
 			}
-			$datasets[] = $a;
-			unset($a);
-			$colorKey = $colorKey + 1;
 		}
 
 		return $datasets;
