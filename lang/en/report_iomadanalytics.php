@@ -33,7 +33,7 @@ $string['iomad_dashboard_progress_report'] = 'Progress Report';
 $string['report_page_title'] = 'Kansai Paint Progress Report';
 
 $string['systemoverview_block_title'] = 'System Overview (All countries)';
-$string['detailledgrades_block_title'] = 'Detailled Grades per country';
+$string['detailledgrades_block_title'] = 'Detailed Grades per country';
 
 $string['countryselector_block_title'] = 'Countries';
 $string['countryselector_tab_title'] = 'Filter grades by company';
