@@ -197,33 +197,35 @@ class ProgressFilters
 		// order the field values in the same order as the frontend
 		$param1 = explode("\n", $field->param1);
 		foreach ($param1 as $key => $param) {
-			$notStarted = $this->reportUtils->getNotStartedCompany($this->getCompanies('Array'));
-			$started    = $this->reportUtils->getStartedFiltered($this->getCompanies('Array'), $field->id, $param);
-			$completed  = $this->reportUtils->getCompletedFiltered($this->getCompanies('Array'), $field->id, $param);
-			$all = $notStarted+$started+$completed;
+			if (!empty($param) && $param != '=== Indonesia' && $param != '=== Malaysia') {
+				$notStarted = $this->reportUtils->getNotStartedCompany($this->getCompanies('Array'));
+				$started    = $this->reportUtils->getStartedFiltered($this->getCompanies('Array'), $field->id, $param);
+				$completed  = $this->reportUtils->getCompletedFiltered($this->getCompanies('Array'), $field->id, $param);
+				$all = $notStarted+$started+$completed;
 
-			$data = new \stdClass();
-			$data->data = [
-				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-				$this->reportUtils->getPercent($started, $all, $precision=false),
-				$this->reportUtils->getPercent($completed, $all, $precision=false)
-			];
-			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+				$data = new \stdClass();
+				$data->data = [
+					$this->reportUtils->getPercent($notStarted, $all, $precision=false),
+					$this->reportUtils->getPercent($started, $all, $precision=false),
+					$this->reportUtils->getPercent($completed, $all, $precision=false)
+				];
+				$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
-			$datasets = array();
-			$datasets['datasets'][] = $data;
-			$datasets['labels'] = array(
-				get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
-				get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
-				get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
-			);
+				$datasets = array();
+				$datasets['datasets'][] = $data;
+				$datasets['labels'] = array(
+					get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
+					get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
+					get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
+				);
 
-			$graph = new \stdClass();
-			$graph->graph = $datasets;
-			$graph->company = $param;
-			$graph->id = $key;
+				$graph = new \stdClass();
+				$graph->graph = $datasets;
+				$graph->company = $param;
+				$graph->id = $key;
 
-			$graphs[] = $graph;
+				$graphs[] = $graph;
+			}
 		}
 
 		$allGraph = new \stdClass();
