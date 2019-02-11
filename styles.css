@@ -76,7 +76,8 @@ button.bkgBtn {
 	position: relative;
 }
 .card-header {
-	background-color: #fff !important;
+	/*background-color: #fff !important;*/
+	background-color: rgba(255,255,255,.01) !important;;
 }
 #progress_block_summary {
 	padding: 0 80px 0 80px;
