@@ -30,6 +30,8 @@ class SystemOverview extends \core\task\scheduled_task
 		if (!isset($DB))   {global $DB;}
 		if (!isset($PAGE)) {global $PAGE;}
 
+		$PAGE->set_context(\context_system::instance());
+
 		$this->DB = $DB;
 
 		$this->reportUtils = new \report_iomadanalytics_utils();
@@ -53,12 +55,12 @@ class SystemOverview extends \core\task\scheduled_task
 		);
 
 		// Average Time Completion Block
-		$this->generateFile(
-			'allCtryTimeCompBlock_rendered.mustache',
-			$this->allCtryTimeCompBlock()
-		);
+		// $this->generateFile(
+		// 	'allCtryTimeCompBlock_rendered.mustache',
+		// 	$this->allCtryTimeCompBlock()
+		// );
 
-		// Average Time Completion Block
+		// Progress of the past 12 months
 		$this->generateFile(
 			'allCtryProgressYearBlock.json',
 			$this->allCtryProgressYearBlock()

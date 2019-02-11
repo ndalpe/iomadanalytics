@@ -37,18 +37,16 @@
       <h2 class="section_title">{{# str }}systemoverview_block_title, report_iomadanalytics{{/ str }}</h2>
     </div>
   </div>
-  <div class="card-deck">
+  <div id="systemOverview" class="card-deck">
     {{> report_iomadanalytics/allCtryAvgBlock_rendered }}
     {{> report_iomadanalytics/allCtryProgressBlock_rendered }}
-    {{> report_iomadanalytics/allCtryTimeCompBlock_rendered }}
+    <!--{{> report_iomadanalytics/allCtryTimeCompBlock_rendered }}-->
   </div>
-  <div class="card-deck">
+  <div class="card-group">
     <div class="card card_style">
-        <div class="card-block">
+        <div class="card-body">
             <h4 class="card-title text-center">{{# str }}AllCtryProgressYearBlock_title, report_iomadanalytics{{/ str }}</h4>
-        </div>
-        <div class="card-block">
-          <canvas id="chart-progressyear" width="900" height="175"></canvas>
+            <canvas id="chart-progressyear" width="900" height="175"></canvas>
         </div>
     </div>
   </div>
