@@ -84,7 +84,7 @@ button.bkgBtn {
 #systemOverview {
 	padding-bottom: 30px;
 }
-.country .custom-control-description {
+.country .custom-control-label {
 	font-weight: bold;
 }
 .country_company {

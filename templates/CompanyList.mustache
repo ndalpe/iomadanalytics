@@ -32,11 +32,8 @@
     * Country - string: Company's country code (ID, MY, etc)
 }}
 {{# CompanyList}}
-<div class="form-check">
-  <label class="custom-control custom-checkbox">
-    <input class="custom-control-input" type="checkbox" checked="checked" value="{{shortname}}" id="{{id}}">
-    <span class="custom-control-indicator"></span>
-    <span class="custom-control-description">{{name}}</span>
-  </label>
+<div class="custom-control custom-checkbox my-1 mr-sm-2">
+    <input type="checkbox" class="custom-control-input"  checked="checked" value="{{shortname}}" id="{{id}}">
+    <label class="custom-control-label" for="{{id}}">{{name}}</label>
 </div>
 {{/ CompanyList}}

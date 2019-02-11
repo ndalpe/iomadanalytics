@@ -64,8 +64,9 @@
   </div>
   {{/ view_stats_all }}
   <div class="row padLR15">
-    <div class="col-lg-12 col-md-12 col-sm-8 col-xs-9 card_style bhoechie-tab-container">
-      <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 bhoechie-tab-menu">
+    <div class="col-12 card_style bhoechie-tab-container">
+      <div class="row padLR15">
+      <div class="col-2 bhoechie-tab-menu">
         <div class="list-group">
           <a href="#" class="list-group-item active text-center">
             <h4 class="fa fa-map fa-2x"></h4><br/>{{# str }}countryselector_block_title, report_iomadanalytics{{/ str }}
@@ -75,7 +76,7 @@
           </a>
         </div>
       </div>
-      <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 bhoechie-tab">
+      <div class="col-10 bhoechie-tab">
         <!-- countries section -->
         <div id="countries_tab" class="bhoechie-tab-content active">
           <h4>{{# str }}countryselector_tab_title, report_iomadanalytics{{/ str }}</h4>
@@ -84,12 +85,9 @@
           {{# CntryList}}
           <div class="col-md-6">
             <div class="country">
-              <div class="form-check">
-                  <label class="custom-control custom-checkbox">
-                    <input class="custom-control-input" type="checkbox" checked="checked" value="{{country_abbr}}" id="{{country_abbr}}">
-                    <span class="custom-control-indicator"></span>
-                    <span class="custom-control-description">{{country_name}}</span>
-                  </label>
+              <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                  <input type="checkbox" class="custom-control-input"  checked="checked" value="{{country_abbr}}" id="{{country_abbr}}">
+                  <label class="custom-control-label" for="{{id}}">{{country_name}}</label>
               </div>
             </div>
             <div class="country_company country-{{country_abbr}}">
@@ -110,6 +108,8 @@
           <button type="button" id="all" data-filterid="all" class="btn btn-primary">{{# str }}filtersselector_remove_filter, report_iomadanalytics{{/ str }}</button>
         </div>
       </div>
+      </div><!--row -->
+
     </div>
   </div>
 </form>
