@@ -57,6 +57,10 @@ $report = new report_iomadanalytics();
 // report Utilities
 $reportUtils = new report_iomadanalytics_utils();
 
+// Set up a users company in their profile.
+// so $USER->company is not undefined (since v3.5)
+iomad::load_company();
+
 /*************************************************/
 /************** Define user's Role ***************/
 /*************************************************/
