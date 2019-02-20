@@ -160,35 +160,40 @@ class report_iomadanalytics_utils {
         return $Students;
     }
 
+    /**
+     * Get the average grade in % for the specified companies
+     *
+     * String|Array $company_ids The company ids to use
+     * int $quiz_id The quiz id to use
+    */
     public function getAvgGrade($company_ids, $quiz_id=12) {
+
+        // if $company_ids is an array, convert it to a comma sep list of company id
+        if (is_array($company_ids)) {
+            $sql_company_ids = implode(',', $company_ids);
+        } else {
+            $sql_company_ids = $company_ids;
+        }
+
         $avgGrades = $this->DB->get_records_sql(
             'SELECT AVG(qg.grade) as avgGrade
             FROM mdl_company_users as cu
             INNER JOIN mdl_quiz_grades as qg ON cu.userid = qg.userid
             INNER JOIN mdl_user as u ON cu.userid = u.id
-            WHERE cu.companyid IN ('.$company_ids.') AND cu.suspended=0 AND qg.quiz=:quizid AND u.suspended=0 AND u.deleted=0
-            GROUP BY cu.companyid;', array('quizid'=>$quiz_id), $limitfrom=0, $limitnum=0
+            WHERE cu.companyid IN ('.$sql_company_ids.') AND cu.suspended=0 AND qg.quiz=:quizid AND u.suspended=0 AND u.deleted=0;',
+            array('quizid'=>$quiz_id), $limitfrom=0, $limitnum=0
         );
-        $numGrades = count($avgGrades);
-        $avgs = 0;
-        foreach ($avgGrades as $value) {
-            $avgs += $value->avggrade;
-        }
-        if ($avgs != 0) {
-            $a = $avgs / $numGrades;
-        } else {
-            $a = 0;
-        }
+
+        // Weirdly Moodle return the value of the first element in the select as array key
+        // so we need to grabe the query result with this. I dont understand why Moodle is
+        // doing it this way
+        $avg = key($avgGrades);
 
         // get the quiz max grade value
         $numQuestion = $this->DB->get_record("quiz", array('id'=>$quiz_id), $fields='grade');
 
         // get grade percentage
-        if ($a != 0) {
-            $percent = round(($a/$numQuestion->grade)*100);
-        } else {
-            $percent = 0;
-        }
+        $percent = $this->getPercent($avg, $numQuestion->grade);
 
         return $percent;
     }
