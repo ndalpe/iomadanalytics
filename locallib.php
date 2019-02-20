@@ -506,23 +506,43 @@ class report_iomadanalytics_utils {
         return $time;
     }
 
+    /**
+     * Return a % from given number
+     *
+     * int|float $number The number to be divided
+     * int $divider The number to divide $number with
+     * bool $precision False to round() the % or int to specifiy the precision
+     *
+    */
     public function getPercent($number, $divider, $precision=false) {
-        $number = intval($number);
-        if ($number === 0) {
-            return 0;
+
+        // make sure $number is numeric
+        // and convert it into a int or a float
+        if (is_numeric($number)) {
+            $number += 0;
+        } else if ($number === 0) {
+            return $number;
         }
 
-        $divider = intval($divider);
-        if ($divider === 0) {
-            return 0;
+        // make sure $divider is numeric
+        // and convert it into a int or a float
+        if (is_numeric($divider)) {
+            $divider += 0;
+        } else if ($divider === 0) {
+            return $divider;
         }
 
-        $p = ($number/$divider) * 100;
+        // Make the % happen
+        $percent = ($number/$divider) * 100;
+
+        // round() the number according to $precision
         if (!$precision) {
-            return round($p);
+            $percent = round($percent);
         } else {
-            return round($p, $precision);
+            $percent = round($percent, $precision);
         }
+
+        return $percent;
     }
 
     /**
