@@ -151,21 +151,14 @@ class SystemOverview extends \core\task\scheduled_task
 	public function allCtryAvgBlock()
 	{
 		foreach ($this->Countries as $key => $country) {
+
+			// Get the companies in the specified country
 			$Companies = $this->reportUtils->getCompaniesInCountry($country->country);
-
-			// company if withing the current country
-			$company_ids = array();
-
-			// compile all company id from the current country and implode it to put in an IN() statement
-			foreach ($Companies as $company) {
-				$company_ids[] = $company->id;
-			}
-			$comp_id = implode(',', $company_ids);
 
 			// store country average
 			$countryFinalTestAvg[] = array(
 				'name' => get_string($country->country, 'countries'),
-				'grade' => $this->reportUtils->getAvgGrade($comp_id, 12),
+				'grade' => $this->reportUtils->getAvgGrade(array_keys($Companies), 12),
 				'country' => $country->country
 			);
 		}
