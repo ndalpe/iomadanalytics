@@ -451,16 +451,26 @@ class report_iomadanalytics_utils {
         return $CompTime;
     }
 
+    /**
+     * Return the count of all user in the database who are not deleted or suspended
+     *
+    */
     public function getCountStudents() {
         return $this->DB->count_records('user', array('deleted'=>0, 'suspended'=>0));
     }
 
+    /**
+     * Return user id of students who completed the Final test
+     *
+     * string $country The 2 letter country code as found in mdl_user.country
+     *
+    */
     public function getAllStudentsCompleted($country) {
         $Students = $this->DB->get_records_sql("
             SELECT u.id
             FROM mdl_user as u
             INNER JOIN mdl_quiz_attempts as a ON u.id = a.userid
-            WHERE u.country=:country AND a.quiz = 12 AND u.suspended=0 AND u.deleted=0;",
+            WHERE u.country=:country AND a.quiz = 12 AND a.state='finished' AND u.suspended=0 AND u.deleted=0;",
             array('country'=>$country)
         );
         return $Students;
