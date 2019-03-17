@@ -552,9 +552,9 @@ class report_iomadanalytics_utils {
 
         // round() the number according to $precision
         if (!$precision) {
-            $percent = round($percent);
+            $percent = floor($percent);
         } else {
-            $percent = round($percent, $precision);
+            $percent = floor($percent, $precision);
         }
 
         return $percent;

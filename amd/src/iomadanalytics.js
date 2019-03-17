@@ -20,6 +20,28 @@ define(
 
                 // Make the yearly progress graph
                 if (body.hasClass('view_stats_all')) {
+                    // Global Courses Progress
+                    $.getJSON(pluginPath+"allCtryProgressBlock_rendered.json", function(allCtryProgressBlock) {
+                        for (country in countries) {
+                            new Chart(document.getElementById("chart-allCtryProgressBlock-"+countries[country]).getContext("2d"), {
+                                type: 'horizontalBar',
+                                data: allCtryProgressBlock[countries[country]],
+                                options: {
+                                    labels: {display: false},
+                                    legend: {display: false},
+                                    title: {display: false},
+                                    tooltips: {mode: 'index', intersect: false},
+                                    responsive: true,
+                                    scales: {
+                                        xAxes: [{stacked: true, display: false}],
+                                        yAxes: [{stacked: true, display: false, barThickness: 8}]
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    // Progress of the past 12 months
                     $.getJSON(pluginPath+"allCtryProgressYearBlock.json", function(gData){
                         new Chart(document.getElementById("chart-progressyear").getContext("2d"), gData);
                     });
@@ -73,7 +95,6 @@ define(
                         freezeControl(false);
                     })
                     .fail(function(response) {
-                        console.log('fail');
                         console.log(response);
 
                         // unfreeze controls
@@ -110,7 +131,8 @@ define(
                                         mode: 'single',
                                         callbacks: {
                                             label: function(tooltip, data) {
-                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' + data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
+                                                return data.labels[tooltip.index].replace('&nbsp;', ' ') + ' : ' +
+                                                       data.datasets[tooltip.datasetIndex].data[tooltip.index] + '%';
                                             }
                                         }
                                     }

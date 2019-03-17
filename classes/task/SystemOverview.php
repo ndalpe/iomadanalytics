@@ -189,6 +189,11 @@ class SystemOverview extends \core\task\scheduled_task
 	/**************************************************/
 	public function allCtryProgressBlock()
 	{
+
+		// contains the data object for Chart.js
+		$chartData = new \stdClass();
+
+		// Get stats for each country
 		foreach ($this->Countries as $key => $country) {
 			$notStarted = $this->reportUtils->getNotStarted($country->country);
 			$started = $this->reportUtils->getStarted($country->country);
@@ -196,14 +201,32 @@ class SystemOverview extends \core\task\scheduled_task
 			$all = $notStarted+$started+$completed;
 			$allCtryProgressData[] = array(
 				'name' => get_string($country->country, 'countries'),
+				'countryid'  => $country->country,
 				'notStarted' => $notStarted,
-				'notStarted_percent' => $this->reportUtils->getPercent($notStarted, $all, $precision=false),
 				'started'    => $started,
-				'started_percent'    => $this->reportUtils->getPercent($started, $all, $precision=false),
 				'completed'  => $completed,
-				'completed_percent'  => $this->reportUtils->getPercent($completed, $all, $precision=false)
+			);
+
+			// Generate the country's JSON object
+			$chartData->{$country->country} = new \stdClass();
+			$chartData->{$country->country}->datasets = array(
+				(object)['label'=>'not started', 'backgroundColor'=>'#c00', 'data'=>array(
+					$this->reportUtils->getPercent($notStarted, $all, $precision=false)
+				)],
+				(object)['label'=>'started', 'backgroundColor'=>'#fc0', 'data'=>array(
+					$this->reportUtils->getPercent($started, $all, $precision=false)
+				)],
+				(object)['label'=>'completed', 'backgroundColor'=>'#3c0', 'data'=>array(
+					$this->reportUtils->getPercent($completed, $all, $precision=false)
+				)]
 			);
 		}
+
+		// Average Progress Block
+		$this->generateFile(
+			'allCtryProgressBlock_rendered.json',
+			json_encode($chartData)
+		);
 
 		// Process keyMetric
 		$notStarted = $started = $completed = 0;

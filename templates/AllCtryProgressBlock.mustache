@@ -41,26 +41,14 @@
       <div class="col-md-4"><p class="text-center">{{completed_label}}<br><span class="colGreen">{{completed_metric}}%</span></p></div>
     </div>
     {{/ keyMetric}}
-    <table>
     {{# countries}}
-    <tr>
-        <td class="countryName">{{name}}</td>
-        <td>
-            <div class="bkgBar">
-                <div class="bar bkgRed" style="width:{{notStarted_percent}}%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgYellow" style="width:{{started_percent}}%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgGreen" style="width:{{completed_percent}}%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-            </div>
-        </td>
-    </tr>
-    {{/ countries}}
+    <table>
+        <tr>
+            <td class="countryName">{{name}}</td>
+            <td><canvas id="chart-allCtryProgressBlock-{{countryid}}" height="8" style="height: 8px;"></canvas></td>
+        </tr>
     </table>
+    {{/ countries}}
   </div>
 </div>
 {{/ AllCtryProgressBlock}}

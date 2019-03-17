@@ -1,44 +1,22 @@
 <div class="card card_style">
   <div class="card-body">
     <h4 class="card-title text-center">Global Courses Progress</h4>
-    <div class="row">
-      <div class="col-md-4"><p class="text-center">Not&nbsp;Started<br><span class="colRed">64%</span></p></div>
-      <div class="col-md-4"><p class="text-center">Started<br><span class="colYellow">7%</span></p></div>
-      <div class="col-md-4"><p class="text-center">Completed<br><span class="colGreen">28%</span></p></div>
+    <div id="progress_block_summary" class="row">
+      <div class="col-md-4"><p class="text-center">Not&nbsp;Started<br><span class="colRed">79%</span></p></div>
+      <div class="col-md-4"><p class="text-center">Started<br><span class="colYellow">4%</span></p></div>
+      <div class="col-md-4"><p class="text-center">Completed<br><span class="colGreen">15%</span></p></div>
     </div>
     <table>
-    <tr>
-        <td class="countryName">Indonesia</td>
-        <td>
-            <div class="bkgBar">
-                <div class="bar bkgRed" style="width:64%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgYellow" style="width:7%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgGreen" style="width:28%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td class="countryName">Malaysia</td>
-        <td>
-            <div class="bkgBar">
-                <div class="bar bkgRed" style="width:0%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgYellow" style="width:0%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-                <div class="bar bkgGreen" style="width:100%;">
-                    <img src="/pix/spacer.gif" width="1" height="1" />
-                </div>
-            </div>
-        </td>
-    </tr>
+        <tr>
+            <td class="countryName">Indonesia</td>
+            <td><canvas id="chart-allCtryProgressBlock-ID" height="8" style="height: 8px;"></canvas></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="countryName">Malaysia</td>
+            <td><canvas id="chart-allCtryProgressBlock-MY" height="8" style="height: 8px;"></canvas></td>
+        </tr>
     </table>
   </div>
 </div>
