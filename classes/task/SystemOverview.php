@@ -116,16 +116,14 @@ class SystemOverview extends \core\task\scheduled_task
 		$notStarted = new \stdClass();
 		$notStarted->data = array_reverse($notStartedData);
 		$notStarted->label = str_replace('&nbsp;', ' ', get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'));
-		$notStarted->backgroundColor = "#cc0000";
-		$notStarted->borderColor = "#cc0000";
+		$notStarted->backgroundColor = $notStarted->borderColor = $this->reportUtils->stackGraphColors['red'];
 		$notStarted->fill = false;
 
 		// Create the completed data object
 		$completed = new \stdClass();
 		$completed->data = array_reverse($completedData);
 		$completed->label = get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics');
-		$completed->backgroundColor = "#33cc00";
-		$completed->borderColor = "#33cc00";
+		$completed->backgroundColor = $completed->borderColor = $this->reportUtils->stackGraphColors['green'];
 		$completed->fill = false;
 
 		// Set the graph option - remove the graph's title
@@ -210,13 +208,13 @@ class SystemOverview extends \core\task\scheduled_task
 			// Generate the country's JSON object
 			$chartData->{$country->country} = new \stdClass();
 			$chartData->{$country->country}->datasets = array(
-				(object)['label'=>'not started', 'backgroundColor'=>'#c00', 'data'=>array(
+				(object)['label'=>'not started', 'backgroundColor'=>$this->reportUtils->stackGraphColors['red'], 'data'=>array(
 					$this->reportUtils->getPercent($notStarted, $all, $type='floor')
 				)],
-				(object)['label'=>'started', 'backgroundColor'=>'#fc0', 'data'=>array(
+				(object)['label'=>'started', 'backgroundColor'=>$this->reportUtils->stackGraphColors['yellow'], 'data'=>array(
 					$this->reportUtils->getPercent($started, $all, $type='floor')
 				)],
-				(object)['label'=>'completed', 'backgroundColor'=>'#3c0', 'data'=>array(
+				(object)['label'=>'completed', 'backgroundColor'=>$this->reportUtils->stackGraphColors['green'], 'data'=>array(
 					$this->reportUtils->getPercent($completed, $all, $type='floor')
 				)]
 			);

@@ -34,6 +34,13 @@ class report_iomadanalytics_utils {
 
     public $quizsId   = array(2,3,4,5,6,7,8,9,10,11,12);
 
+    public $stackGraphColors = array(
+        'red' => '#c00',
+        'yellow' => '#fc0',
+        'green' => '#3c0',
+        'grey' => '#666'
+    );
+
     public $barGraphColors = array(
         "51,102,204",
         "220,57,18",

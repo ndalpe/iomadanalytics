@@ -161,7 +161,11 @@ class ProgressFilters
 				$this->reportUtils->getPercent($started, $all, $type='round', $precision=false),
 				$this->reportUtils->getPercent($completed, $all, $type='round', $precision=false)
 			];
-			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+			$data->backgroundColor = array(
+				$this->reportUtils->stackGraphColors['red'],
+				$this->reportUtils->stackGraphColors['yellow'],
+				$this->reportUtils->stackGraphColors['green']
+			);
 
 			$datasets = array();
 			$datasets['datasets'][] = $data;
@@ -209,7 +213,11 @@ class ProgressFilters
 					$this->reportUtils->getPercent($started, $all, $type='round', $precision=false),
 					$this->reportUtils->getPercent($completed, $all, $type='round', $precision=false)
 				];
-				$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+				$data->backgroundColor = array(
+					$this->reportUtils->stackGraphColors['red'],
+					$this->reportUtils->stackGraphColors['yellow'],
+					$this->reportUtils->stackGraphColors['green']
+				);
 
 				$datasets = array();
 				$datasets['datasets'][] = $data;
@@ -359,7 +367,11 @@ class ProgressFilters
 				$this->reportUtils->getPercent($started,    $all, $type='round', $precision=false),
 				$this->reportUtils->getPercent($completed,  $all, $type='round', $precision=false)
 			];
-			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+			$data->backgroundColor = array(
+				$this->reportUtils->stackGraphColors['red'],
+				$this->reportUtils->stackGraphColors['yellow'],
+				$this->reportUtils->stackGraphColors['green']
+			);
 
 			$datasets = array();
 			$datasets['datasets'][] = $data;
@@ -486,7 +498,11 @@ class ProgressFilters
 				$this->reportUtils->getPercent($started,    $all, $type='round', $precision=false),
 				$this->reportUtils->getPercent($completed,  $all, $type='round', $precision=false)
 			];
-			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
+			$data->backgroundColor = array(
+				$this->reportUtils->stackGraphColors['red'],
+				$this->reportUtils->stackGraphColors['yellow'],
+				$this->reportUtils->stackGraphColors['green']
+			);
 
 			$datasets = array();
 			$datasets['datasets'][] = $data;
