@@ -157,9 +157,9 @@ class ProgressFilters
 
 			$data = new \stdClass();
 			$data->data = [
-				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-				$this->reportUtils->getPercent($started, $all, $precision=false),
-				$this->reportUtils->getPercent($completed, $all, $precision=false)
+				$this->reportUtils->getPercent($notStarted, $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($started, $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($completed, $all, $type='round', $precision=false)
 			];
 			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
@@ -205,9 +205,9 @@ class ProgressFilters
 
 				$data = new \stdClass();
 				$data->data = [
-					$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-					$this->reportUtils->getPercent($started, $all, $precision=false),
-					$this->reportUtils->getPercent($completed, $all, $precision=false)
+					$this->reportUtils->getPercent($notStarted, $all, $type='round', $precision=false),
+					$this->reportUtils->getPercent($started, $all, $type='round', $precision=false),
+					$this->reportUtils->getPercent($completed, $all, $type='round', $precision=false)
 				];
 				$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
@@ -355,9 +355,9 @@ class ProgressFilters
 
 			$data = new \stdClass();
 			$data->data = [
-				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-				$this->reportUtils->getPercent($started,    $all, $precision=false),
-				$this->reportUtils->getPercent($completed,  $all, $precision=false)
+				$this->reportUtils->getPercent($notStarted, $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($started,    $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($completed,  $all, $type='round', $precision=false)
 			];
 			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 
@@ -482,9 +482,9 @@ class ProgressFilters
 
 			$data = new \stdClass();
 			$data->data = [
-				$this->reportUtils->getPercent($notStarted, $all, $precision=false),
-				$this->reportUtils->getPercent($started,    $all, $precision=false),
-				$this->reportUtils->getPercent($completed,  $all, $precision=false)
+				$this->reportUtils->getPercent($notStarted, $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($started,    $all, $type='round', $precision=false),
+				$this->reportUtils->getPercent($completed,  $all, $type='round', $precision=false)
 			];
 			$data->backgroundColor = array('#cc0000', '#ffcc00', '#33cc00');
 

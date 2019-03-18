@@ -525,11 +525,12 @@ class report_iomadanalytics_utils {
      * Return a % from given number
      *
      * int|float $number The number to be divided
-     * int $divider The number to divide $number with
+     * int  $divider The number to divide $number with
+     * str  $type how to round the %. Possible values: round, floor
      * bool $precision False to round() the % or int to specifiy the precision
      *
     */
-    public function getPercent($number, $divider, $precision=false) {
+    public function getPercent($number, $divider, $type='round', $precision=false) {
 
         // make sure $number is numeric
         // and convert it into a int or a float
@@ -550,11 +551,16 @@ class report_iomadanalytics_utils {
         // Make the % happen
         $percent = ($number/$divider) * 100;
 
-        // round() the number according to $precision
-        if (!$precision) {
+        // apply the desired round fundtion
+        if ($type == 'round') {
+            // round() the number according to $precision
+            if (!$precision) {
+                $percent = round($percent);
+            } else {
+                $percent = round($percent, $precision);
+            }
+        } else if ($type == 'floor') {
             $percent = floor($percent);
-        } else {
-            $percent = floor($percent, $precision);
         }
 
         return $percent;

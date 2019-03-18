@@ -211,13 +211,13 @@ class SystemOverview extends \core\task\scheduled_task
 			$chartData->{$country->country} = new \stdClass();
 			$chartData->{$country->country}->datasets = array(
 				(object)['label'=>'not started', 'backgroundColor'=>'#c00', 'data'=>array(
-					$this->reportUtils->getPercent($notStarted, $all, $precision=false)
+					$this->reportUtils->getPercent($notStarted, $all, $type='floor')
 				)],
 				(object)['label'=>'started', 'backgroundColor'=>'#fc0', 'data'=>array(
-					$this->reportUtils->getPercent($started, $all, $precision=false)
+					$this->reportUtils->getPercent($started, $all, $type='floor')
 				)],
 				(object)['label'=>'completed', 'backgroundColor'=>'#3c0', 'data'=>array(
-					$this->reportUtils->getPercent($completed, $all, $precision=false)
+					$this->reportUtils->getPercent($completed, $all, $type='floor')
 				)]
 			);
 		}
@@ -239,11 +239,11 @@ class SystemOverview extends \core\task\scheduled_task
 
 		$keyMetric = array(
 			'notStarted_label' => get_string('AllCtryProgressBlock_notStarted', 'report_iomadanalytics'),
-			'notStarted_metric' => $this->reportUtils->getPercent($notStarted, $numberStudents, $precision=false),
+			'notStarted_metric' => $this->reportUtils->getPercent($notStarted, $numberStudents, $type='floor'),
 			'started_label' => get_string('AllCtryProgressBlock_started', 'report_iomadanalytics'),
-			'started_metric' => $this->reportUtils->getPercent($started, $numberStudents, $precision=false),
+			'started_metric' => $this->reportUtils->getPercent($started, $numberStudents, $type='floor'),
 			'completed_label' => get_string('AllCtryProgressBlock_completed', 'report_iomadanalytics'),
-			'completed_metric' => $this->reportUtils->getPercent($completed, $numberStudents, $precision=false)
+			'completed_metric' => $this->reportUtils->getPercent($completed, $numberStudents, $type='floor')
 		);
 
 		// All country final test avg bock data
