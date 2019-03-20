@@ -21,23 +21,20 @@ define(
                 // Make the yearly progress graph
                 if (body.hasClass('view_stats_all')) {
                     // Global Courses Progress
-                    $.getJSON(pluginPath+"allCtryProgressBlock_rendered.json", function(allCtryProgressBlock) {
-                        for (country in countries) {
-                            new Chart(document.getElementById("chart-allCtryProgressBlock-"+countries[country]).getContext("2d"), {
-                                type: 'horizontalBar',
-                                data: allCtryProgressBlock[countries[country]],
-                                options: {
-                                    labels: {display: false},
-                                    legend: {display: false},
-                                    title: {display: false},
-                                    tooltips: {mode: 'index', intersect: false},
-                                    responsive: true,
-                                    scales: {
-                                        xAxes: [{stacked: true, display: false}],
-                                        yAxes: [{stacked: true, display: false, barThickness: 8}]
-                                    }
-                                }
-                            });
+                    $.getJSON(pluginPath+"systemoverview_rendered.json", function(systemOverviewData) {
+                        for (var country in countries) {
+                            for (var graph in systemOverviewData[countries[country]]) {
+
+                                // Define chart ID name
+                                // chart + block name in template + country code uppercase
+                                var chartHtmlId = "chart-"+graph+"-"+countries[country];
+
+                                // Chart data
+                                var chartData = systemOverviewData[countries[country]][graph];
+
+                                // Make the actual chart
+                                makeStackedGraph(chartHtmlId,chartData);
+                            }
                         }
                     });
 
@@ -55,6 +52,32 @@ define(
 
                 // refresh the grades graph when a company checkbox is checked/unchecked
                 $(".country_company input").change(function(){refreshGradesGraph();});
+
+                function makeStackedGraph(graphCanvasId, data) {
+
+                    // check if the HTML Element exists
+                    var chartElement = document.getElementById(graphCanvasId);
+                    if (chartElement !== null) {
+                        // Create the chart
+                        new Chart(chartElement.getContext("2d"), {
+                            type: 'horizontalBar',
+                            data: data,
+                            options: {
+                                labels: {display: false},
+                                legend: {display: false},
+                                title: {display: false},
+                                tooltips: {mode: 'index', intersect: false},
+                                responsive: true,
+                                scales: {
+                                    xAxes: [{stacked: true, display: false}],
+                                    yAxes: [{stacked: true, display: false, barThickness: 8}]
+                                }
+                            }
+                        });
+                    } else {
+                        console.log(graphCanvasId + " not found");
+                    }
+                }
 
                 /**
                  * Ajax a new dataset according active country and filter
@@ -95,7 +118,6 @@ define(
                         freezeControl(false);
                     })
                     .fail(function(response) {
-                        console.log(response);
 
                         // unfreeze controls
                         freezeControl(false);

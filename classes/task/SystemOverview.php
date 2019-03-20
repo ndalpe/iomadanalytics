@@ -19,6 +19,9 @@ class SystemOverview extends \core\task\scheduled_task
 	// Moodle public database abstraction layer
 	public $DB;
 
+	// Contains the object structure for Final test avg and progress
+	public $chartData;
+
 	public function get_name()
 	{
 		// Shown in admin screens
@@ -42,6 +45,10 @@ class SystemOverview extends \core\task\scheduled_task
 
 		$this->report = new \report_iomadanalytics();
 
+		// Contains the PHP data structure for the
+		// AllCtryAvgBlock and AllCtryProgressBlock block
+		$this->chartData = new \stdClass();
+
 		// Average Fianl Test Result Block
 		$this->generateFile(
 			'allCtryAvgBlock_rendered.mustache',
@@ -52,6 +59,12 @@ class SystemOverview extends \core\task\scheduled_task
 		$this->generateFile(
 			'allCtryProgressBlock_rendered.mustache',
 			$this->allCtryProgressBlock()
+		);
+
+		// Write the JSON file
+		$this->generateFile(
+			'systemoverview_rendered.json',
+			json_encode($this->chartData)
 		);
 
 		// Average Time Completion Block
@@ -153,12 +166,33 @@ class SystemOverview extends \core\task\scheduled_task
 			// Get the companies in the specified country
 			$Companies = $this->reportUtils->getCompaniesInCountry($country->country);
 
-			// store country average
+			// Full country name
+			$countryName = get_string($country->country, 'countries');
+
+			// Calculate the avg grade
+			$avgGrade = $this->reportUtils->getAvgGrade(array_keys($Companies), 12);
+
+			// store country average to render mustache tpl
 			$countryFinalTestAvg[] = array(
-				'name' => get_string($country->country, 'countries'),
-				'grade' => $this->reportUtils->getAvgGrade(array_keys($Companies), 12),
+				'name' => $countryName,
+				'grade' => $avgGrade,
 				'country' => $country->country
 			);
+
+			// Generate the country's JSON object
+			$datasets = array(
+				(object)[
+					'label'=>$countryName,
+					'backgroundColor'=>$this->reportUtils->stackGraphColors['green'],
+					'data'=>array($avgGrade)
+				],
+				(object)[
+					'label'=>$countryName,
+					'backgroundColor'=>$this->reportUtils->stackGraphColors['grey'],
+					'data'=>array(100 - $avgGrade)
+				]
+			);
+			$this->addChartData($country->country, 'AllCtryAvgBlock', $datasets);
 		}
 
 		// avg of all country
@@ -187,10 +221,6 @@ class SystemOverview extends \core\task\scheduled_task
 	/**************************************************/
 	public function allCtryProgressBlock()
 	{
-
-		// contains the data object for Chart.js
-		$chartData = new \stdClass();
-
 		// Get stats for each country
 		foreach ($this->Countries as $key => $country) {
 			$notStarted = $this->reportUtils->getNotStarted($country->country);
@@ -206,25 +236,25 @@ class SystemOverview extends \core\task\scheduled_task
 			);
 
 			// Generate the country's JSON object
-			$chartData->{$country->country} = new \stdClass();
-			$chartData->{$country->country}->datasets = array(
-				(object)['label'=>'not started', 'backgroundColor'=>$this->reportUtils->stackGraphColors['red'], 'data'=>array(
-					$this->reportUtils->getPercent($notStarted, $all, $type='floor')
-				)],
-				(object)['label'=>'started', 'backgroundColor'=>$this->reportUtils->stackGraphColors['yellow'], 'data'=>array(
-					$this->reportUtils->getPercent($started, $all, $type='floor')
-				)],
-				(object)['label'=>'completed', 'backgroundColor'=>$this->reportUtils->stackGraphColors['green'], 'data'=>array(
-					$this->reportUtils->getPercent($completed, $all, $type='floor')
-				)]
+			$datasets = array(
+				(object)[
+					'label'=>'not started',
+					'backgroundColor'=>$this->reportUtils->stackGraphColors['red'],
+					'data'=>array($this->reportUtils->getPercent($notStarted, $all, $type='floor'))
+				],
+				(object)[
+					'label'=>'started',
+					'backgroundColor'=>$this->reportUtils->stackGraphColors['yellow'],
+					'data'=>array($this->reportUtils->getPercent($started, $all, $type='floor'))
+				],
+				(object)[
+					'label'=>'completed',
+					'backgroundColor'=>$this->reportUtils->stackGraphColors['green'],
+					'data'=>array($this->reportUtils->getPercent($completed, $all, $type='floor'))
+				]
 			);
+			$this->addChartData($country->country, 'allCtryProgressBlock', $datasets);
 		}
-
-		// Average Progress Block
-		$this->generateFile(
-			'allCtryProgressBlock_rendered.json',
-			json_encode($chartData)
-		);
 
 		// Process keyMetric
 		$notStarted = $started = $completed = 0;
@@ -256,6 +286,36 @@ class SystemOverview extends \core\task\scheduled_task
 		$this->report->setTplBlock($allCtryProgBlockTlpData);
 
 		return $this->output->render_allCtryProgressBlock($this->report);
+	}
+
+	/*
+	 * Add a block of data into a country
+	 * str $country The 2 letters country code, uppercased
+	 * str Block The template block name
+	 * array $data The PHP Chart structure to be converted to JSON and used by Chart.js
+	**/
+	public function addChartData($country, $block, $data) {
+
+		// Make sure we have a country, a block and $data is an array
+		if (empty($country) || empty($block) || !is_array($data)) {
+			return false;
+		}
+
+		// Make sure the country code is uppercase
+		$country = strtoupper($country);
+
+		// Create the country block if it doesn't exists
+		if (!isset($this->chartData->{$country})) {
+			$this->chartData->{$country} = new \stdClass();
+		}
+
+		// Create the template block if it doesn't exists
+		if (!isset($this->chartData->{$country}->{$block})) {
+			$this->chartData->{$country}->{$block} = new \stdClass();
+		}
+
+		// Add the chart data to the datasets property
+		$this->chartData->{$country}->{$block}->datasets = $data;
 	}
 
 	/**************************************************/

@@ -38,7 +38,7 @@ class report_iomadanalytics_utils {
         'red' => '#c00',
         'yellow' => '#fc0',
         'green' => '#3c0',
-        'grey' => '#666'
+        'grey' => '#BBB'
     );
 
     public $barGraphColors = array(

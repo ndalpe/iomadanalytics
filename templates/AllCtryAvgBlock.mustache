@@ -32,24 +32,18 @@
 }}
 {{# AllCtryAvgBlock}}
 <div class="card card_style">
-    <div class="card-body">
-        <h4 class="card-title text-center">{{# str }}AllCtryAvgBlock_title, report_iomadanalytics{{/ str }}</h4>
-        <h5 class="card-title text-center">{{keyMetric}}%</h5>
-        <table>
-        {{# countries}}
-        <tr>
-            <td class="countryName">{{name}}</td>
-            <td class="countryGrade">{{grade}}%</td>
-            <td>
-                <div class="bkgBar">
-                    <div class="bar bkgGreen" style="width:{{grade}}%;">
-                        <img src="/pix/spacer.gif" width="1" height="1" />
-                    </div>
-                </div>
-            </td>
-        </tr>
-        {{/ countries}}
-        </table>
-    </div>
+<div class="card-body">
+<h4 class="card-title text-center">{{# str }}AllCtryAvgBlock_title, report_iomadanalytics{{/ str }}</h4>
+<h5 class="card-title text-center">{{keyMetric}}%</h5>
+<table>
+{{# countries}}
+<tr>
+    <td class="countryName">{{name}}</td>
+    <td class="countryGrade">{{grade}}%</td>
+    <td><canvas id="chart-AllCtryAvgBlock-{{country}}" height="8" style="height: 8px;"></canvas></td>
+</tr>
+{{/ countries}}
+</table>
+</div>
 </div>
 {{/ AllCtryAvgBlock}}
