@@ -66,10 +66,10 @@ define(
                             type: 'horizontalBar',
                             data: data,
                             options: {
+                                tooltips: {enabled: false},
                                 labels: {display: false},
                                 legend: {display: false},
                                 title: {display: false},
-                                tooltips: {mode: 'index', intersect: false},
                                 responsive: true,
                                 scales: {
                                     xAxes: [{stacked: true, display: false}],
