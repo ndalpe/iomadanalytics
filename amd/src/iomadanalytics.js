@@ -225,7 +225,7 @@ define(
                 */
                 function toggleChekbox(country) {
                     // check/uncheck all checkbox of the country
-                    $("input#"+country).click(function() {
+                    $("#"+country).click(function() {
                         // Set the company checkbox state eq to the country's checkbox state
                         $('.country-'+country+' input').prop('checked', $(this).prop('checked'));
 
