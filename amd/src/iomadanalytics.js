@@ -56,6 +56,11 @@ define(
                 // Make the initial final grades graph of all companies without filter
                 refreshGradesGraph();
 
+                /**
+                 * Make a vertical stacked bar chart, use for % or progress bar
+                 * str graphCanvasId The html id of the <canvas> to attach the graph to
+                 * array data The JSON data for the graph
+                */
                 function makeStackedGraph(graphCanvasId, data) {
 
                     // check if the HTML Element exists
