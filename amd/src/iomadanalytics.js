@@ -18,7 +18,16 @@ define(
                 ProgressChartId = '',
                 body = $("body");
 
-                // Make the yearly progress graph
+                // Add listener to country's checkbox in the country selector
+                for (var i = 0; i < countries.length; i++) {toggleChekbox(countries[i]);}
+
+                // refresh the grades graph when a company checkbox is checked/unchecked
+                $(".country_company input").change(function(){refreshGradesGraph();});
+
+                // Blocks :
+                // Progress of the past 12 months,
+                // Average Final Test Result,
+                // and Global Courses Progress
                 if (body.hasClass('view_stats_all')) {
                     // Global Courses Progress
                     $.getJSON(pluginPath+"systemoverview_rendered.json", function(systemOverviewData) {
@@ -46,12 +55,6 @@ define(
 
                 // Make the initial final grades graph of all companies without filter
                 refreshGradesGraph();
-
-                // Add listener to country's checkbox in the country selector
-                for (var i = 0; i < countries.length; i++) {toggleChekbox(countries[i]);}
-
-                // refresh the grades graph when a company checkbox is checked/unchecked
-                $(".country_company input").change(function(){refreshGradesGraph();});
 
                 function makeStackedGraph(graphCanvasId, data) {
 
@@ -222,7 +225,7 @@ define(
                 */
                 function toggleChekbox(country) {
                     // check/uncheck all checkbox of the country
-                    $("#"+country).click(function() {
+                    $("input#"+country).click(function() {
                         // Set the company checkbox state eq to the country's checkbox state
                         $('.country-'+country+' input').prop('checked', $(this).prop('checked'));
 
