@@ -113,6 +113,65 @@ class ProgressFilters
 		return $labels;
 	}
 
+	/**
+	 * Return the list of all countries letter code
+	 *
+	 * str $companies a comma separated string of company id uptained from $this->getCompanies()
+	 */
+	public function getCountryList($companies = '') {
+		if (empty($companies)) {
+			$Countries = $this->DB->get_records_sql("SELECT DISTINCT country FROM mdl_company");
+		} else {
+			$Countries = $this->DB->get_records_sql("SELECT DISTINCT country FROM mdl_company WHERE id IN ({$companies})");
+		}
+
+		return $Countries;
+	}
+
+	/**
+	 * Separate the field values by country
+	 * Countries are separated by "=== Country name" in the param1 field's values
+	 *
+	 * object $Field The profile field to filter
+	 * object $countries The list of country to keep
+	 *
+	 * return object str the values possessed by all country
+	 */
+	public function getFiltersByCountry($Field, $countries) {
+
+		// Contains the values to be returned
+		$filteredValues = '';
+
+		foreach ($countries as $key => $country) {
+
+			// convert the country code into the country name ie. ID -> Indonesia
+			$countryName = get_string($country->country, 'countries');
+
+			// Separate the list by country (country value starts with '=== ')
+			$values = explode("=== ", $Field->param1);
+
+			foreach ($values as $key => $value) {
+				if (strpos($values[$key], $countryName) !== false) {
+					$filteredValues .= trim(str_replace($countryName, '', $values[$key]));
+				}
+			}
+		}
+
+		return $filteredValues;
+	}
+
+	/**
+	 * Get a list country from the given company list
+	 *
+	 * return object The country list
+	 */
+	public function getCountriesForConpanies() {
+		// Get a comma separated string of selected company id
+		$selectedCompanies = $this->getCompanies();
+		$Countries = $this->getCountryList($selectedCompanies);
+		return $Countries;
+	}
+
 	public function getFiltersData()
 	{
 		if ($this->filter == 'all') {
@@ -121,6 +180,13 @@ class ProgressFilters
 		} else {
 			$Field = $this->getField();
 		}
+
+		// Get the country of the selected company
+		$selectedCountry = $this->getCountriesForConpanies();
+
+		// Keep only the values from selected countries
+		$filteredValues = $this->getFiltersByCountry($Field, $selectedCountry);
+		$Field->param1 = $filteredValues;
 
 		// Create method name to fetch field data
 		$filterFuncName = 'fieldContent'.ucfirst(strtolower($Field->shortname));
