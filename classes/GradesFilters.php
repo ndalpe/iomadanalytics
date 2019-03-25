@@ -282,8 +282,6 @@ class GradesFilters
 	/**
 	 * Get grades from Region field.
 	 * For now the region field is not associated to a country/company
-	 * therefor it all regions are shown to all admin level
-	 * ie: a company admin in indonesia will see the malaysian region in his report
 	 *
 	 * @param object $field The current custom profile field object
 	 * @return
@@ -317,6 +315,7 @@ class GradesFilters
 					WHERE mdl_user_info_data.fieldid=:fieldid
 						AND mdl_company_users.companyid IN({$companyids})
 						AND mdl_quiz_grades.quiz=:quizid
+						AND mdl_user_info_data.data <> ''
 					GROUP BY data;",
 					array('sumgrade'=>$sumGrades->sumgrades, 'fieldid'=>$field->id, 'quizid'=>$quiz->id)
 				);
