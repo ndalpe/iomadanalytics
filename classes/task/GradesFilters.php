@@ -104,27 +104,10 @@ class GradesFilters extends \core\task\scheduled_task
 	}
 
 	/**
-	 * Get grades from filter who doesn't need specific rendering (such as age group)
-	 *
-	 * @param object $field The current custom profile field object
-	 * @return
-	 *
-	*/
-	public function fieldContentGeneric($field){ return "filterContentGeneric"; }
-
-	/**
 	 * Get grades from filter date of birth profile field
 	 *
 	 * @param object $field The DOB custom profile field object
-	 * @return
-	 *
-	*/
-
-	/**
-	 * Return an array containing available age group found in mdl_user_info_data
-	 *
-	 * @param object $field The DOB custom profile field object
-	 * @return array
+	 * @return array Array containing available age group found in mdl_user_info_data
 	 *
 	*/
 	public function fieldContentDob($field)
