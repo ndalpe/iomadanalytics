@@ -25,14 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class report_iomadanalytics_utils {
 
-    // Cache recordset
-    public $Users = false;
-    public $Attemps;
-    public $quiz;
-
     public $coursesId = array(7,9,10,11,12,13,14,15,16,17,18);
-
-    public $quizsId   = array(2,3,4,5,6,7,8,9,10,11,12);
 
     public $stackGraphColors = array(
         'red' => '#c00',
@@ -84,10 +77,8 @@ class report_iomadanalytics_utils {
 
     /**
      * Get a list of all countries where there are KP company
-     *
-     * bool $grouped whether the country list should be grouped by country or not
-    */
-    public function getCountries($grouped = false) {
+     */
+    public function getCountries() {
         $Countries = $this->DB->get_records_sql(
             'SELECT count(id),country FROM mdl_company WHERE suspended = :suspended AND parentid != :parentid GROUP BY country ORDER BY country ASC;', array('parentid'=>'0','suspended'=>'0'), $limitfrom=0, $limitnum=0
         );
@@ -96,9 +87,7 @@ class report_iomadanalytics_utils {
 
     /**
      * Get a list of all countries where there are KP company
-     *
-     * bool $grouped whether the country list should be grouped by country or not
-    */
+     */
     public function getCompanies() {
         $Companies = $this->DB->get_records_sql(
             'SELECT * FROM mdl_company WHERE suspended = :suspended AND parentid != :parentid ORDER BY country ASC;', array('parentid'=>'0','suspended'=>'0'), $limitfrom=0, $limitnum=0
